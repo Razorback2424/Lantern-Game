@@ -1,0 +1,167 @@
+/* Clean standalone asset integration layer.
+   Drop the files described in assets/ASSET_MANIFEST.md into place to activate
+   the cinematic art. CSS/SVG fallbacks remain visible while they are absent. */
+
+.heroGarden{
+  background-image:
+    linear-gradient(180deg,rgba(6,20,32,.02),rgba(4,20,25,.38)),
+    url("assets/cinematic/hero-pip.webp");
+  background-size:cover;
+  background-position:center;
+  background-blend-mode:soft-light,normal;
+}
+.asset-heroPip .heroGarden #heroPip{opacity:0}
+
+.storyArt{
+  background-image:
+    linear-gradient(180deg,rgba(5,23,29,.05),rgba(5,23,29,.16)),
+    url("assets/cinematic/story-bridge.webp");
+  background-size:cover;
+  background-position:center;
+}
+
+.mapScreen{position:relative;isolation:isolate}
+.mapScreen::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:16px 0 42px;
+  border-radius:38px;
+  background:
+    linear-gradient(180deg,rgba(5,20,26,.36),rgba(5,20,26,.84)),
+    url("assets/cinematic/map-landmarks.webp") center / cover;
+  opacity:.62;
+  box-shadow:inset 0 0 0 1px rgba(255,222,132,.1),0 30px 90px rgba(0,0,0,.2);
+}
+
+.pipPortrait{
+  background-image:
+    linear-gradient(180deg,rgba(11,27,27,.05),rgba(11,27,27,.18)),
+    url("assets/cinematic/pip-portrait.webp");
+  background-size:cover;
+  background-position:center 30%;
+}
+.asset-pipPortrait .pip{opacity:0}
+
+.missionCharacter{overflow:hidden;position:relative}
+.missionCharacter img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 5px 8px rgba(35,18,5,.26))}
+.storyArt img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 8px 20px rgba(43,19,4,.32))}
+
+.asset-promiseCrystal .nextLessonIcon{
+  color:transparent;
+  background:radial-gradient(circle,rgba(115,91,207,.18),transparent 72%),url("assets/cinematic/promise_flame_crystal.png") center / 100% 100% no-repeat;
+  box-shadow:0 0 0 1px rgba(177,146,255,.28),0 0 25px rgba(127,94,255,.42);
+}
+
+.asset-notebookPanel .notebookCard.card{
+  background-image:
+    linear-gradient(rgba(255,248,231,.76),rgba(238,222,190,.76)),
+    url("assets/cinematic/ui/notebook_panel_open.png");
+  background-size:100% 100%;
+  background-blend-mode:screen,normal;
+}
+
+.asset-encounterCardFrame .lessonCard{
+  border:8px solid transparent;
+  background:linear-gradient(165deg,#fff9e8,#e6d7b7) padding-box,url("assets/cinematic/ui/encounter_card_frame.png") border-box;
+  background-size:auto,100% 100%;
+  background-repeat:no-repeat;
+}
+
+.portraitMini{position:relative;overflow:hidden}
+.portraitPhoto{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.sceneProp{width:min(25vw,220px);height:175px;right:6%;bottom:61px}
+.scenePropPhoto{width:100%;height:100%;display:block;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 9px 12px rgba(0,0,0,.28))}
+
+@media(max-width:700px){
+  .mapScreen::before{inset:10px 0 28px;border-radius:26px;opacity:.48}
+  .sceneProp{width:155px;height:130px;right:1%;bottom:78px}
+}
+
+/* ---------------------------------------------------------------
+   High-impact batch 1: mission scene backdrops + Pip play states.
+   Both layers are additive. If a file is missing the image simply
+   never paints and the authored CSS scene / SVG Pip remains visible.
+   --------------------------------------------------------------- */
+
+/* Scene backdrops. app.js sets #world[data-scene] alongside the theme class;
+   the painted CSS sky/ground stay beneath as a safety net.
+
+   The wash on each scene is calibrated to its measured luminance, not applied
+   uniformly. The eleven backplates span mean luminance 31 to 119 out of 255, so
+   a single gradient would leave the dark scenes murky and the bright ones
+   blown out. Each pair below normalizes the scene toward an effective mean of
+   roughly 40. Re-measure if a scene is re-exported at a different exposure. */
+#world[data-scene]::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background-size:cover;
+  background-position:center;
+  pointer-events:none;
+}
+#world[data-scene="bridge-of-embers"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/bridge-of-embers.webp")}
+#world[data-scene="wardroot-garden"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/wardroot-garden.webp")}
+#world[data-scene="rootgate"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/rootgate.webp")}
+#world[data-scene="moonhouse"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/moonhouse.webp")}
+#world[data-scene="black-rain"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/black-rain.webp")}
+#world[data-scene="lantern-heart-breaking"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.05),rgba(4,14,20,0.11)),url("assets/cinematic/scenes/lantern-heart-breaking.webp")}
+#world[data-scene="forge"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.24),rgba(4,14,20,0.52)),url("assets/cinematic/scenes/forge.webp")}
+#world[data-scene="lantern-heart"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.31),rgba(4,14,20,0.69)),url("assets/cinematic/scenes/lantern-heart.webp")}
+#world[data-scene="glassworks"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.32),rgba(4,14,20,0.71)),url("assets/cinematic/scenes/glassworks.webp")}
+#world[data-scene="tovins-route"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.36),rgba(4,14,20,0.75)),url("assets/cinematic/scenes/tovins-route.webp")}
+#world[data-scene="second-morning"]::before{background-image:linear-gradient(180deg,rgba(6,18,26,0.36),rgba(4,14,20,0.75)),url("assets/cinematic/scenes/second-morning.webp")}
+
+/* Keep the authored sky/ground from fighting the photographic backdrop,
+   but leave the animated rain overlay and festival lights intact. */
+#world[data-scene] .worldSky,
+#world[data-scene] .worldBack,
+#world[data-scene] .worldGround,
+#world[data-scene] .worldFence{opacity:0}
+#world[data-scene] .sceneProp,
+#world[data-scene] .visitor,
+#world[data-scene] .effectLayer,
+#world[data-scene] .pip,
+#world[data-scene] .thoughtBubble,
+#world[data-scene] .sceneCaption{z-index:5}
+
+/* Screenshot-QA fixes: retain visible text over cinematic backplates. */
+#world[data-scene] .thoughtBubble{
+  z-index:12;
+  color:#1c352c;
+  -webkit-text-fill-color:#1c352c;
+}
+
+/* Pip play states. Six matched 1024x1536 RGBA frames.
+   Gated on the preloader's asset- flags so the SVG Pip stays put unless the
+   matching image has actually loaded.
+
+   Sizing is calibrated per state rather than using `contain`. The six frames
+   are consistent to within ~12% of subject height and ~85px of foot line, which
+   at runtime scale would read as Pip growing and hovering by a few pixels as his
+   mood changes. The values below normalize subject height to ~78px and plant his
+   feet ~6px from the bottom of the 112x134 box in every state. Re-measure if the
+   art is re-exported. */
+#pip[class*="mood-"]{background-repeat:no-repeat}
+.asset-pipIdle #pip.mood-curious,
+.asset-pipThinking #pip.mood-thinking,
+.asset-pipConfident #pip.mood-confident,
+.asset-pipConfused #pip.mood-confused,
+.asset-pipProud #pip.mood-proud,
+.asset-pipSad #pip.mood-sad{
+  filter:drop-shadow(0 6px 10px rgba(20,30,18,.34));
+}
+.asset-pipIdle #pip.mood-curious > *:not(.pip-accessories),
+.asset-pipThinking #pip.mood-thinking > *:not(.pip-accessories),
+.asset-pipConfident #pip.mood-confident > *:not(.pip-accessories),
+.asset-pipConfused #pip.mood-confused > *:not(.pip-accessories),
+.asset-pipProud #pip.mood-proud > *:not(.pip-accessories),
+.asset-pipSad #pip.mood-sad > *:not(.pip-accessories){opacity:0}
+
+.asset-pipIdle #pip.mood-curious{background-image:url("assets/cinematic/pip/idle.webp");background-size:auto 138.3px;background-position:center bottom -25.6px}
+.asset-pipThinking #pip.mood-thinking{background-image:url("assets/cinematic/pip/thinking.webp");background-size:auto 130.8px;background-position:center bottom -22.4px}
+.asset-pipConfident #pip.mood-confident{background-image:url("assets/cinematic/pip/confident.webp");background-size:auto 136.3px;background-position:center bottom -29.1px}
+.asset-pipConfused #pip.mood-confused{background-image:url("assets/cinematic/pip/confused.webp");background-size:auto 131.7px;background-position:center bottom -24.4px}
+.asset-pipProud #pip.mood-proud{background-image:url("assets/cinematic/pip/proud.webp");background-size:auto 140.8px;background-position:center bottom -32.4px}
+.asset-pipSad #pip.mood-sad{background-image:url("assets/cinematic/pip/sad.webp");background-size:auto 125.5px;background-position:center bottom -26.5px}

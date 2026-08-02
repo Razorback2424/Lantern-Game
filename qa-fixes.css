@@ -1,0 +1,42 @@
+/* Small, targeted fixes from the screenshot QA pass. */
+
+/* The floating header hid the title of the section the game scrolls to. */
+.appHeader{position:relative}
+html{scroll-padding-top:24px}
+#teachPanel,#challengeCard,#reflectionCard{scroll-margin-top:24px}
+
+/* Ensure the mobile primary action cannot inherit a transparent text fill. */
+#nextLessonButton{
+  color:#3f3016!important;
+  -webkit-text-fill-color:#3f3016!important;
+  text-shadow:none;
+}
+
+/* The scene prompt must remain readable over the cinematic image. */
+#world[data-scene] .thoughtBubble{
+  color:#1c352c;
+  -webkit-text-fill-color:#1c352c;
+}
+
+/* Give the horizontal card rail an explicit mobile affordance. */
+.lessonRailHint{display:none}
+
+/* Small labels on dark surfaces need phone-distance contrast. */
+.mapIntro .kicker,.chapterPath .kicker{color:#f3d98d;opacity:.96}
+.levelNode p{color:rgba(255,255,255,.72)}
+.levelNode .nodeMeta{color:rgba(244,213,140,.82);font-size:.62rem}
+.nextLessonPanel small{color:rgba(255,255,255,.82);font-size:.72rem}
+
+@media(max-width:700px){
+  .lessonRailHint{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    margin:0 2px 11px;
+    color:rgba(255,238,188,.88);
+    font-size:.76rem;
+    font-weight:800;
+  }
+  .lessonRailHint span{font-size:1.05rem;color:#f0c65d}
+}

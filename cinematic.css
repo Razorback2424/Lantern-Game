@@ -1,0 +1,296 @@
+/*
+  Rule Garden 2.2 — cinematic presentation layer
+  Presentation-only overrides. Gameplay, state, inference, saves, and DOM hooks remain unchanged.
+*/
+
+:root{
+  --cinematic-night:#06171b;
+  --cinematic-blue:#0c2731;
+  --cinematic-teal:#123f3c;
+  --cinematic-ink:#162b26;
+  --cinematic-paper:#fff8e8;
+  --cinematic-paper-deep:#ead9b9;
+  --cinematic-gold:#efc66a;
+  --cinematic-gold-bright:#ffe39a;
+  --cinematic-violet:#6f5a93;
+  --cinematic-glass:rgba(7,27,32,.72);
+  --cinematic-line:rgba(255,224,147,.22);
+  --cinematic-shadow:0 26px 70px rgba(0,8,12,.42);
+  --cinematic-paper-shadow:0 25px 55px rgba(0,9,10,.28),0 4px 12px rgba(56,37,12,.12);
+}
+
+html{background:var(--cinematic-night)}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 12% 8%,rgba(53,139,105,.22),transparent 25%),
+    radial-gradient(circle at 84% 18%,rgba(64,88,151,.2),transparent 31%),
+    radial-gradient(circle at 48% 78%,rgba(239,174,63,.1),transparent 32%),
+    linear-gradient(145deg,#06181a 0%,#0a2930 46%,#06171b 100%);
+  background-attachment:fixed;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+  background:
+    radial-gradient(circle at 8% 30%,rgba(255,204,91,.45) 0 2px,transparent 3px),
+    radial-gradient(circle at 22% 16%,rgba(255,221,133,.34) 0 1px,transparent 2px),
+    radial-gradient(circle at 79% 24%,rgba(255,191,76,.35) 0 2px,transparent 3px),
+    radial-gradient(circle at 91% 58%,rgba(255,228,151,.28) 0 1px,transparent 2px),
+    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.28));
+  background-size:auto,auto,auto,auto,auto;
+}
+body::after{
+  content:"";position:fixed;left:0;right:0;bottom:0;height:28vh;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(ellipse at 5% 100%,#173b32 0 28%,transparent 29%),
+    radial-gradient(ellipse at 21% 100%,#204a3a 0 34%,transparent 35%),
+    radial-gradient(ellipse at 43% 100%,#13382f 0 31%,transparent 32%),
+    radial-gradient(ellipse at 68% 100%,#1c4938 0 35%,transparent 36%),
+    radial-gradient(ellipse at 91% 100%,#153a31 0 32%,transparent 33%);
+  opacity:.64;
+}
+
+.screen{max-width:1460px;padding:28px 28px 100px}
+
+/* Floating shell instead of a full-width dashboard bar. */
+.appHeader{
+  max-width:1460px;margin:16px auto 0;padding:10px 12px 10px 16px;
+  border:1px solid rgba(255,230,166,.16);border-radius:22px;
+  background:linear-gradient(135deg,rgba(4,23,27,.82),rgba(7,34,38,.66));
+  box-shadow:0 18px 52px rgba(0,7,10,.28),inset 0 1px rgba(255,255,255,.05);
+  backdrop-filter:blur(18px) saturate(1.15);
+}
+.brandButton{gap:12px}.brandButton strong{font-family:var(--display-font);font-size:1.03rem;letter-spacing:.02em;color:#fff2c9}.brandButton small{color:rgba(255,238,191,.62);letter-spacing:.1em;text-transform:uppercase;font-size:.52rem}
+.brandMark{width:40px;height:40px;border:1px solid rgba(255,224,139,.35);background:radial-gradient(circle at 45% 38%,#fff0ad,#e4a83e 48%,#8f4c20 75%);color:#4a2b12;box-shadow:0 0 24px rgba(239,177,66,.28)}
+.chapterProgressWrap{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08)}
+.roundButton{border:1px solid rgba(255,225,153,.18);background:rgba(255,255,255,.055);color:#f8e5b3}.roundButton:hover{background:rgba(255,225,153,.12);border-color:rgba(255,225,153,.34)}
+
+/* Welcome: a cinematic title tableau rather than a card beside a card. */
+.welcomeScreen{grid-template-columns:minmax(0,1.25fr) minmax(350px,.75fr);gap:0;align-items:stretch;padding-top:26px}
+.heroGarden{height:min(720px,calc(100vh - 150px));min-height:560px;border-radius:42px 0 0 42px;border-color:rgba(255,230,161,.2);box-shadow:var(--cinematic-shadow)}
+.heroGarden::before{background:radial-gradient(circle at 67% 30%,rgba(255,218,121,.18),transparent 26%),linear-gradient(180deg,rgba(4,21,34,.02),rgba(4,20,25,.42))}
+.welcomeCopy{
+  margin:0;padding:72px 54px;display:flex;flex-direction:column;justify-content:center;
+  border-radius:0 42px 42px 0;border:1px solid rgba(255,226,148,.18);border-left:0;
+  background:linear-gradient(150deg,rgba(5,25,30,.93),rgba(10,38,39,.84));
+  box-shadow:var(--cinematic-shadow);backdrop-filter:blur(22px);
+}
+.welcomeCopy h1{font-size:clamp(3.3rem,6vw,5.7rem);line-height:.92;letter-spacing:-.035em}.welcomeCopy p{font-size:1.08rem;line-height:1.68;max-width:560px}
+.promiseRow{display:grid;grid-template-columns:1fr;gap:0;margin:24px 0 30px;border-top:1px solid rgba(255,231,165,.12)}
+.promiseRow span{padding:12px 0;border-bottom:1px solid rgba(255,231,165,.1);color:rgba(255,247,221,.78)}
+.welcomeCopy .button--large{align-self:flex-start;min-width:220px}
+
+/* Map: a continuous illuminated route, not a grid or list of cards. */
+.mapIntro{
+  min-height:245px;padding:38px 42px;border-radius:34px;
+  background:
+    radial-gradient(circle at 86% 44%,rgba(255,197,81,.18),transparent 19%),
+    linear-gradient(105deg,rgba(6,27,31,.95),rgba(10,44,43,.78));
+  border:1px solid rgba(255,225,148,.18);box-shadow:var(--cinematic-shadow);overflow:hidden;
+}
+.mapIntro::before{content:"";position:absolute;right:130px;bottom:-10px;width:420px;height:210px;opacity:.42;background:radial-gradient(ellipse at 50% 100%,#3e7652 0 32%,transparent 33%),radial-gradient(ellipse at 20% 100%,#285542 0 30%,transparent 31%),radial-gradient(ellipse at 80% 100%,#254e41 0 30%,transparent 31%)}
+.mapIntro h1{font-size:clamp(2.1rem,4vw,3.5rem);max-width:970px;line-height:1.05}.mapIntro p{font-size:1rem;line-height:1.55;max-width:850px}
+.pipPortrait{width:150px;height:150px;border:1px solid rgba(255,238,189,.26);background:radial-gradient(circle at 50% 32%,#f8e3a6,#678867 58%,#193a35 100%);box-shadow:0 18px 44px rgba(0,0,0,.32)}
+.mapLayout{grid-template-columns:minmax(0,1fr) 340px;gap:22px}
+.chapterPath.card{
+  padding:25px 25px 30px;border-radius:30px;
+  background:linear-gradient(145deg,rgba(5,26,31,.82),rgba(9,43,43,.58));
+  border:1px solid rgba(255,225,150,.14);box-shadow:var(--cinematic-shadow);backdrop-filter:blur(16px);
+}
+.nextLessonPanel{border-radius:24px;background:linear-gradient(135deg,rgba(36,86,62,.96),rgba(20,57,54,.93));border-color:rgba(255,224,142,.25);box-shadow:0 18px 40px rgba(0,10,10,.28)}
+.levelMap{
+  display:flex;align-items:stretch;gap:0;overflow-x:auto;scroll-snap-type:x proximity;
+  padding:34px 12px 18px;margin:16px -8px 0;position:relative;scrollbar-width:thin;scrollbar-color:rgba(240,194,89,.28) transparent;
+}
+.levelMap::before{left:40px;right:40px;top:67px;bottom:auto;width:auto;height:2px;background:linear-gradient(90deg,rgba(255,208,96,.18),rgba(255,208,96,.75),rgba(116,173,111,.55),rgba(255,255,255,.1));box-shadow:0 0 16px rgba(255,206,89,.18)}
+.levelMap::-webkit-scrollbar{height:7px}.levelMap::-webkit-scrollbar-thumb{background:rgba(240,194,89,.25);border-radius:999px}
+.actDivider{
+  flex:0 0 88px;align-self:stretch;writing-mode:vertical-rl;transform:rotate(180deg);justify-content:center;
+  margin:0 10px 0 0;color:rgba(255,225,153,.62);font-size:.58rem;letter-spacing:.16em;border-right:1px solid rgba(255,225,153,.12)
+}
+.actDivider::before,.actDivider::after{display:none}
+.levelNode{
+  flex:0 0 175px;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  min-height:225px;padding:0 11px 15px;text-align:center;background:transparent!important;border:0!important;border-radius:0;box-shadow:none!important;
+}
+.levelNode:hover:not(:disabled){transform:translateY(-5px);background:transparent!important}
+.levelNode .levelNumber{
+  position:relative;grid-column:auto;grid-row:auto;flex:none;width:66px;height:66px;margin-bottom:18px;
+  border:2px solid rgba(255,235,179,.28);background:radial-gradient(circle at 38% 31%,#4b7662,#153c35 70%);font-family:var(--display-font);font-size:1.25rem;
+  box-shadow:0 12px 26px rgba(0,0,0,.34),0 0 0 7px rgba(255,255,255,.025);
+}
+.levelNode.current .levelNumber{background:radial-gradient(circle at 38% 31%,#fff0a7,#e6a53e 52%,#8d4f20);box-shadow:0 0 0 7px rgba(255,205,87,.1),0 0 30px rgba(255,188,54,.32),0 12px 26px rgba(0,0,0,.35)}
+.levelNode.completed .levelNumber{background:radial-gradient(circle at 38% 31%,#a7d59c,#4e9164 60%,#235a43)}
+.levelNode h3{grid-column:auto;grid-row:auto;margin:0;color:#fff3d0;font-size:.88rem;line-height:1.25;min-height:44px}
+.levelNode p{grid-column:auto;grid-row:auto;margin:6px 0 0;color:rgba(255,255,255,.5);font-size:.64rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.levelNode .nodeMeta{grid-column:auto;grid-row:auto;margin-top:auto;padding-top:9px;font-size:.56rem;color:rgba(244,213,140,.56)}
+.levelNode .nodeStars{position:absolute;top:72px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.64rem}
+.levelNode .nodeKind{display:none}
+.levelNode:disabled{opacity:.42}.levelNode:disabled .levelNumber{filter:grayscale(.55)}
+.gardenJournal.card{border-radius:26px 34px 30px 25px;box-shadow:var(--cinematic-paper-shadow);transform:rotate(.2deg)}
+.journalStats{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid rgba(68,68,45,.12);border-bottom:1px solid rgba(68,68,45,.12)}
+.journalStat{flex:1 1 50%;padding:11px 8px;background:transparent;border-radius:0}.journalStat:nth-child(odd){border-right:1px solid rgba(68,68,45,.1)}
+.habitList{gap:0}.habit{padding:11px 4px;background:transparent;border-bottom:1px solid rgba(68,68,45,.1);border-radius:0}
+
+/* Mission: one cinematic scene with a story inset rather than three equal tiles. */
+.playTopline{margin-top:2px;margin-bottom:12px;color:rgba(255,244,213,.78)}
+.missionCard.card{
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(340px,.8fr) auto;gap:24px;align-items:center;
+  min-height:245px;padding:34px 36px;border-radius:34px;color:white;overflow:hidden;
+  background:
+    radial-gradient(circle at 82% 42%,rgba(255,191,62,.18),transparent 22%),
+    linear-gradient(110deg,rgba(5,25,31,.97),rgba(9,50,48,.82));
+  border:1px solid rgba(255,225,147,.18);box-shadow:var(--cinematic-shadow);
+}
+.missionCard.card::before{content:"";position:absolute;right:-40px;bottom:-45px;width:520px;height:230px;opacity:.55;background:radial-gradient(ellipse at 50% 100%,#315f45 0 26%,transparent 27%),radial-gradient(ellipse at 20% 100%,#264b3c 0 30%,transparent 31%),radial-gradient(ellipse at 84% 100%,#1d4338 0 28%,transparent 29%)}
+.missionCard.card::after{height:2px;background:linear-gradient(90deg,transparent,var(--cinematic-gold),transparent)}
+.missionRule,.missionStory,.lessonBudget{position:relative;z-index:1}
+.missionCard h1{font-size:clamp(2.5rem,4.5vw,4.2rem);line-height:.95;letter-spacing:-.025em;max-width:720px}
+.missionCard p{font-size:.98rem;line-height:1.55;max-width:760px}
+.missionStory{
+  align-self:center;padding:18px 19px;border-radius:24px;
+  background:linear-gradient(145deg,rgba(10,31,32,.72),rgba(21,62,51,.62));
+  border:1px solid rgba(255,224,143,.25);box-shadow:inset 0 1px rgba(255,255,255,.07),0 16px 38px rgba(0,10,10,.24);backdrop-filter:blur(12px);
+}
+.missionCharacter{width:52px;height:52px;flex-basis:52px;font-size:1.5rem}.missionStory strong{font-size:1.15rem}.missionStory p{font-size:.79rem}
+.lessonBudget{align-self:center;border-radius:20px!important;background:rgba(0,0,0,.22)!important;border:1px solid rgba(255,226,147,.13);padding:14px 16px!important;color:#fff1c6}
+.lessonBudget .budgetLabel,.lessonBudget #lessonBudgetText{color:rgba(255,244,212,.62)!important}
+
+/* Guidance becomes a compact constellation strip. */
+.teacherGuide.card{
+  margin-top:14px;padding:11px 17px;grid-template-columns:230px minmax(0,1fr);gap:18px;border-radius:24px;
+  background:linear-gradient(135deg,rgba(5,25,29,.78),rgba(12,49,47,.56));border:1px solid rgba(255,226,151,.11);box-shadow:0 15px 35px rgba(0,8,10,.2);backdrop-filter:blur(16px);
+}
+.teacherRole{padding:4px 15px 4px 0}.teacherRoleIcon{width:31px;height:31px}.teacherRole p{font-size:.7rem;line-height:1.35}.teacherRole strong{font-size:.62rem}
+.teachingSteps::before{top:18px}.teachingSteps b{width:34px;height:34px;border-width:3px}.teachingSteps strong{font-size:.68rem}.teachingSteps small{font-size:.56rem}
+.phaseRibbon{margin:10px 0 16px;gap:48px}.phaseRibbon span{font-size:.68rem}
+
+/* Main play surface: airy glass workbench + physical notebook. */
+.playColumns{grid-template-columns:minmax(0,1fr) 350px;gap:22px;align-items:start}
+.teachingCard.card{
+  padding:25px 26px 22px;border-radius:31px;color:#fff8df;
+  background:linear-gradient(150deg,rgba(7,28,33,.88),rgba(13,52,49,.72));
+  border:1px solid rgba(255,226,151,.16);box-shadow:var(--cinematic-shadow);backdrop-filter:blur(16px);
+}
+.teachingCard.card::before{left:100px;right:100px;height:2px;background:linear-gradient(90deg,transparent,var(--cinematic-gold),transparent)}
+.teachingCard.card::after{background:radial-gradient(circle at 86% 8%,rgba(255,208,91,.08),transparent 25%)}
+.teachingCard h2{color:#fff1c7;font-size:1.7rem}.teachingCard .kicker{color:#ecca72}.teachingCard .sectionLead{color:rgba(255,255,255,.65);font-size:.84rem;line-height:1.5}
+.teachingHeaderActions .textButton,.teachingCard .textButton{color:#f2d27e}
+.teachingStepPrompt{
+  margin:16px 0 8px;padding:12px 15px;border-radius:18px;
+  background:linear-gradient(135deg,rgba(42,101,73,.86),rgba(24,71,63,.78));border:1px solid rgba(255,237,183,.1);box-shadow:0 12px 25px rgba(0,12,12,.18)
+}
+.teachingStepPrompt.step-test{background:linear-gradient(135deg,rgba(87,68,128,.9),rgba(45,53,98,.82))}
+
+/* Cast rail: portraits are scenes, not repeated tiles. */
+.lessonGrid{gap:13px;margin:15px -7px 0;padding:8px 7px 20px;scroll-padding-inline:7px}
+.lessonCard{
+  flex:0 0 190px;min-height:235px;padding:0 0 43px;overflow:hidden;border-radius:27px 27px 20px 20px;
+  background:linear-gradient(165deg,#fff9e8,#e6d7b7);border:1px solid rgba(255,234,176,.55);
+  box-shadow:0 17px 34px rgba(0,9,10,.22),inset 0 1px rgba(255,255,255,.9);
+}
+.lessonCard::before{
+  content:"";position:absolute;inset:0 0 auto;height:112px;z-index:0;
+  background:radial-gradient(circle at 50% 28%,#f5e3aa,#b7d0ad 55%,#5f8366 100%);
+}
+.lessonCard::after{top:112px;left:14px;right:14px;background:rgba(83,70,43,.14)}
+.lessonCard .portraitMini{position:relative;z-index:1;width:94px;height:94px;margin:14px auto 8px;padding:8px;background:rgba(255,249,221,.78);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 26px rgba(20,52,37,.22)}
+.lessonCard strong{position:relative;z-index:1;padding:0 14px;font-size:.98rem;margin-top:8px;color:#213c32}
+.lessonCard .caseSummary{position:relative;z-index:1;padding:0 14px;font-size:.68rem;line-height:1.4;color:#667168}
+.lessonCard .infoMark{z-index:2;top:12px;right:12px;background:rgba(9,34,29,.55);color:white}
+.lessonCard .pickLabel{left:14px;bottom:12px;z-index:2;padding:6px 12px;background:#255f43;color:#fff4cb}
+.lessonCard:hover:not(:disabled),.lessonCard:focus-visible{transform:translateY(-7px) rotate(-.35deg);box-shadow:0 25px 48px rgba(0,9,10,.3)}
+.lessonCard.selected,.lessonCard.guidedChoice{border-color:#ffd36b;box-shadow:0 0 0 4px rgba(255,210,103,.16),0 25px 50px rgba(0,8,10,.32)}
+.lessonCard.selected::before,.lessonCard.guidedChoice::before{background:radial-gradient(circle at 50% 28%,#fff1ab,#e9c66c 52%,#8e6b38 100%)}
+.lessonCard.used{opacity:.78;filter:saturate(.78)}
+.lessonCard.hasPrediction{padding-bottom:63px}.casePredictionBadge{left:14px;right:14px;bottom:12px;z-index:3}
+
+/* Action dock: one decisive interaction surface. */
+.teachPanel{
+  margin-top:4px;padding:19px;border-radius:25px;
+  background:linear-gradient(145deg,rgba(255,249,231,.97),rgba(232,216,182,.96));
+  border:1px solid rgba(255,239,194,.8);box-shadow:0 20px 45px rgba(0,8,10,.26),inset 0 1px white;color:var(--cinematic-ink)
+}
+.teachPanel--empty{background:linear-gradient(145deg,rgba(255,249,231,.13),rgba(255,255,255,.04));border:1px dashed rgba(255,232,169,.23);color:#fff2ca;box-shadow:none}
+.teachPanel--empty small{color:rgba(255,255,255,.55)}
+.emptyStepNumber{background:linear-gradient(145deg,#ffdf83,#c99532);color:#432e11;box-shadow:0 7px 17px rgba(0,0,0,.2)}
+.selectedCaseHeader{padding-bottom:13px}.selectedCaseHeader .portraitMini{width:76px;height:76px}.selectedCaseHeader strong{font-size:1.16rem}.selectedCaseHeader small{color:#6d766d}
+.actionQuestion strong{font-size:1.25rem}.actionChoices{gap:13px;margin-top:11px}
+.actionButton{min-height:96px;border-radius:20px;font-size:.92rem;background:rgba(255,255,255,.52)}
+.actionButton::before{width:7px}.actionButton:hover{transform:translateY(-4px);box-shadow:0 18px 30px rgba(35,46,34,.16)}
+.lessonTrailLabel{color:rgba(255,233,174,.55)}.lessonTrail:empty::after{color:rgba(255,255,255,.45)}.lessonChip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.08);color:#fff0c2}
+.teachingFooter{border-top-color:rgba(255,230,166,.12)}.teachingFooter .button--quiet{color:#f0d58b;border-color:rgba(255,230,166,.12);background:rgba(255,255,255,.04)}
+.teachingFooter .button--primary{background:linear-gradient(135deg,#4f9870,#236047);box-shadow:0 13px 30px rgba(14,78,48,.32)}
+
+.notebookCard.card{
+  top:88px;padding-left:36px;border-radius:24px 38px 32px 23px;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 30px,rgba(117,95,57,.055) 30px 31px),
+    linear-gradient(145deg,#fff9ea,#e7d6b4);
+  border:1px solid rgba(255,239,195,.82);box-shadow:var(--cinematic-paper-shadow);transform:rotate(.28deg)
+}
+.notebookCard.card::before{left:14px;top:18px;bottom:18px;width:10px;background:repeating-linear-gradient(180deg,#6e573e 0 3px,#d1b786 3px 9px,transparent 9px 14px);border-radius:999px;opacity:.88}
+.notebookTitleRow{padding-bottom:13px}.notebookTitleRow h2{font-size:1.35rem}.notebookToggle{color:#65543a}
+.notebookEmptyState{background:rgba(101,76,139,.08);border-color:rgba(101,76,139,.22)}
+.proofItem{background:rgba(77,91,64,.055)}
+
+/* The animated scene becomes a full-width cinematic window. */
+.worldCard.card{
+  margin-top:24px;padding:18px 18px 16px;border-radius:31px;
+  background:linear-gradient(145deg,rgba(4,21,27,.88),rgba(8,42,44,.67));
+  border:1px solid rgba(255,226,148,.16);box-shadow:var(--cinematic-shadow);backdrop-filter:blur(14px)
+}
+.world{height:390px;border-radius:29px;border-color:rgba(255,241,196,.32);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 25px 60px rgba(0,7,10,.42)}
+.worldSky{background:radial-gradient(circle at 79% 25%,rgba(255,231,151,.17),transparent 18%),linear-gradient(180deg,#376675 0%,#89a89d 46%,#a7b68e 59%,transparent 60%)}
+.world--night .worldSky{background:radial-gradient(circle at 79% 24%,rgba(255,239,181,.2),transparent 19%),linear-gradient(180deg,#172848,#3e5269 58%,transparent 60%)}
+.worldBack{filter:drop-shadow(0 -8px 20px rgba(22,69,47,.18))}.worldGround{background:radial-gradient(ellipse at 50% 100%,rgba(216,183,120,.52) 0 29%,transparent 30%),linear-gradient(180deg,#5f9662 0 15%,#60523f 16% 100%)}
+.worldHeader .kicker{color:#edce78}.worldHeader h2{color:#fff0c7}.worldHeader p{color:rgba(255,255,255,.62)}
+
+/* Reflection and solo try: keep cinematic hierarchy consistent. */
+.challengeCard.card,.reflectionCard.card{border-radius:31px;box-shadow:var(--cinematic-paper-shadow)}
+.challengeCase,.ruleCompare article,.evidenceExplanation,.misunderstandingPanel{border-radius:22px}
+
+/* Deliberate responsive collapse; no desktop dashboard squeezed into mobile. */
+@media(max-width:1100px){
+  .screen{padding-inline:20px}.appHeader{margin-inline:20px}
+  .mapLayout{grid-template-columns:1fr}.gardenJournal.card{position:static;transform:none}
+  .missionCard.card{grid-template-columns:1fr auto}.missionStory{grid-column:1/-1}.playColumns{grid-template-columns:minmax(0,1fr) 315px}
+}
+@media(max-width:900px){
+  .welcomeScreen{grid-template-columns:1fr}.heroGarden{height:490px;min-height:0;border-radius:34px 34px 0 0}.welcomeCopy{border-left:1px solid rgba(255,226,148,.18);border-top:0;border-radius:0 0 34px 34px;padding:42px 34px}
+  .missionCard.card{grid-template-columns:1fr}.lessonBudget{justify-self:start}.teacherGuide.card{grid-template-columns:1fr}.teacherRole{border-right:0;border-bottom:1px solid rgba(255,230,166,.12);padding-bottom:10px}
+  .playColumns{grid-template-columns:1fr}.notebookCard.card{position:static;top:auto;transform:none}.world{height:340px}
+}
+@media(max-width:700px){
+  .screen{padding:18px 12px 80px}.appHeader{margin:8px 10px 0;border-radius:18px}.brandButton small{display:none}.chapterProgress{max-width:92px}
+  .welcomeCopy{padding:34px 24px}.welcomeCopy h1{font-size:3rem}.heroGarden{height:390px}
+  .mapIntro{padding:27px 24px;min-height:215px}.mapIntro h1{font-size:2rem}.pipPortrait{width:105px;height:105px}
+  .chapterPath.card{padding:19px 14px}.levelMap{padding-left:2px;padding-right:2px}.actDivider{flex-basis:54px}.levelNode{flex-basis:145px}.levelNode .levelNumber{width:56px;height:56px}.levelNode .nodeStars{top:63px}
+  .missionCard.card{padding:25px 20px;min-height:0;border-radius:27px}.missionCard h1{font-size:2.35rem}.missionStory{padding:14px}.teacherGuide.card{padding:10px 12px}.teachingSteps small{display:none}.phaseRibbon{gap:20px}
+  .teachingCard.card{padding:20px 14px;border-radius:26px}.lessonCard{flex-basis:158px;min-height:217px}.lessonCard .portraitMini{width:80px;height:80px}.lessonCard::before{height:99px}.lessonCard::after{top:99px}
+  .teachPanel{padding:15px}.actionChoices.two,.actionChoices.three{grid-template-columns:1fr}.actionButton{min-height:82px}.teachingFooter{grid-template-columns:1fr}.teachingFooter .button{width:100%;min-width:0}
+  .worldCard.card{padding:12px;border-radius:25px}.world{height:300px;border-radius:22px}.worldHeader{display:grid}.certaintyBadge{justify-self:start}
+}
+@media(max-width:430px){
+  .headerActions{gap:4px}.roundButton{width:35px;height:35px}.chapterProgressWrap{padding:5px 7px}.chapterProgressLabel{font-size:.58rem}
+  .heroGarden{height:330px}.welcomeCopy h1{font-size:2.55rem}.welcomeCopy p{font-size:.95rem}.welcomeCopy .button--large{width:100%}
+  .mapIntro{display:block}.pipPortrait{display:none}.levelNode{flex-basis:132px}.actDivider{flex-basis:43px;margin-right:5px}.levelNode h3{font-size:.78rem}.levelNode p{font-size:.59rem}
+  .missionCard h1{font-size:2.05rem}.missionStory{display:grid;grid-template-columns:42px 1fr}.missionCharacter{width:42px;height:42px;flex-basis:42px}.lessonBudget{width:100%!important}
+  .teachingSteps strong{font-size:.58rem}.teachingSteps b{width:29px;height:29px}.teachingSteps::before{top:15px}.phaseRibbon{gap:10px}.phaseRibbon span{font-size:.58rem}
+  .lessonCard{flex-basis:145px}.notebookCard.card{padding-left:31px}.world{height:280px}
+}
+
+@media(prefers-reduced-motion:no-preference){
+  .missionCard.card,.mapIntro,.teachingCard.card,.worldCard.card{animation:cinematicRise .42s ease both}
+  .lessonCard.selected{animation:selectedBreath 2.4s ease-in-out infinite}
+  @keyframes cinematicRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes selectedBreath{50%{box-shadow:0 0 0 7px rgba(255,210,103,.08),0 27px 52px rgba(0,8,10,.34)}}
+}
+
+/* 2.2 responsive correction: reset desktop grid placement before mobile stacking. */
+@media(max-width:900px){
+  .missionCard.card{display:flex;flex-direction:column;align-items:stretch;gap:16px}
+  .missionRule,.missionStory,.lessonBudget{grid-column:auto!important;grid-row:auto!important;width:100%!important;align-self:stretch!important}
+  .lessonBudget{justify-content:flex-start!important}
+  .notebookCard.card{position:relative;top:auto}
+}

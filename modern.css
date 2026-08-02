@@ -1,0 +1,419 @@
+/* Rule Garden 1.7 — Lantern Atelier visual system
+   Presentation-only layer. Gameplay, state, progression, and authored content remain in the base files. */
+:root{
+  --night-950:#06171b;
+  --night-900:#092129;
+  --night-800:#10313b;
+  --night-700:#194750;
+  --pine:#174839;
+  --pine-bright:#2f7753;
+  --paper-warm:#fff9e9;
+  --paper-deep:#f2e5c8;
+  --paper-line:rgba(101,76,37,.12);
+  --plum:#6c4d86;
+  --plum-bright:#9670b7;
+  --coral:#cf654f;
+  --amber:#f0bd4f;
+  --amber-bright:#ffd978;
+  --ink-rich:#1c352c;
+  --glass:rgba(10,29,34,.72);
+  --glass-soft:rgba(14,39,45,.56);
+  --line-light:rgba(255,238,186,.21);
+  --deep-shadow:0 30px 80px rgba(0,10,13,.42);
+  --paper-shadow:0 24px 65px rgba(0,13,16,.28), inset 0 1px rgba(255,255,255,.78);
+  --glow:0 0 0 1px rgba(255,220,122,.22),0 16px 45px rgba(235,173,55,.12);
+}
+
+html{background:var(--night-950)}
+body{
+  color:var(--ink-rich);
+  background:
+    radial-gradient(circle at 12% 12%,rgba(60,126,88,.34),transparent 30%),
+    radial-gradient(circle at 86% 17%,rgba(75,71,138,.24),transparent 28%),
+    radial-gradient(circle at 52% 108%,rgba(28,96,67,.46),transparent 42%),
+    linear-gradient(180deg,#102e37 0%,#071b20 58%,#041415 100%);
+  background-attachment:fixed;
+}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body::before{
+  opacity:.42;
+  background:
+    radial-gradient(circle at 7% 23%,rgba(255,199,80,.85) 0 2px,transparent 3px),
+    radial-gradient(circle at 94% 31%,rgba(255,202,85,.7) 0 2px,transparent 3px),
+    radial-gradient(circle at 17% 76%,rgba(255,213,118,.46) 0 1px,transparent 2px),
+    radial-gradient(circle at 74% 82%,rgba(255,213,118,.48) 0 1px,transparent 2px),
+    radial-gradient(circle at 43% 11%,rgba(255,255,255,.3) 0 1px,transparent 2px);
+  background-size:310px 320px,370px 290px,260px 250px,340px 300px,220px 210px;
+}
+body::after{
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 22%,rgba(0,0,0,.13));
+  mix-blend-mode:soft-light;
+}
+
+.app{position:relative;isolation:isolate;overflow:clip}
+.screen{max-width:1320px;padding:24px 24px 88px}
+.appHeader{
+  max-width:1320px;position:sticky;top:0;z-index:80;
+  padding:13px 22px;margin:0 auto;
+  background:linear-gradient(180deg,rgba(6,23,28,.92),rgba(6,23,28,.68));
+  backdrop-filter:blur(22px) saturate(135%);
+  border:1px solid rgba(255,229,151,.12);border-top:0;border-radius:0 0 24px 24px;
+  box-shadow:0 14px 40px rgba(0,8,10,.24);
+}
+.brandButton{gap:13px}
+.brandMark{
+  width:42px;height:42px;border-radius:14px;
+  background:radial-gradient(circle at 50% 30%,#ffe590,#efb63d 52%,#9f5a1d 100%);
+  box-shadow:0 0 26px rgba(239,182,61,.35),inset 0 1px rgba(255,255,255,.7);
+  font-size:1.05rem;
+}
+.brandButton strong{font-family:Georgia,"Iowan Old Style",serif;font-size:1.18rem;letter-spacing:.015em}
+.brandButton small{font-size:.7rem;color:#f2d991;opacity:.88}
+.roundButton{
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.11);
+  box-shadow:inset 0 1px rgba(255,255,255,.08);transition:.18s ease;
+}
+.roundButton:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
+.chapterProgressWrap{background:rgba(0,0,0,.22);border-color:rgba(255,224,140,.13);padding:8px 12px}
+.chapterProgress span{width:8px;height:8px;background:rgba(255,255,255,.18)}
+.chapterProgress span.done,.chapterProgress span.current{background:var(--amber-bright);box-shadow:0 0 12px rgba(255,217,120,.55)}
+
+h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;letter-spacing:-.018em}
+.kicker{letter-spacing:.16em;color:inherit}
+.card{
+  background:linear-gradient(145deg,rgba(255,250,235,.98),rgba(242,229,199,.98));
+  border:1px solid rgba(255,239,197,.72);border-radius:28px;
+  box-shadow:var(--paper-shadow);
+}
+.button{border-radius:17px;box-shadow:inset 0 1px rgba(255,255,255,.2);transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 23px rgba(4,25,18,.18),inset 0 1px rgba(255,255,255,.25)}
+.button--primary{background:linear-gradient(135deg,#347a50,#1d5139);box-shadow:0 12px 26px rgba(18,72,47,.24),inset 0 1px rgba(255,255,255,.18)}
+.button--quiet{background:rgba(70,78,66,.08);border:1px solid rgba(47,70,57,.1)}
+.textButton{color:#397253;border-radius:12px;transition:.16s ease}
+.textButton:hover{background:rgba(48,99,70,.08)}
+
+/* Welcome — one cinematic scene with the copy floating above it. */
+.welcomeScreen{grid-template-columns:minmax(470px,1.16fr) minmax(340px,.84fr);gap:32px;min-height:calc(100vh - 76px)}
+.heroGarden{
+  height:620px;border-radius:56px 56px 120px 56px;
+  background:
+    radial-gradient(circle at 72% 18%,rgba(255,239,178,.98) 0 7%,rgba(255,239,178,.14) 8%,transparent 22%),
+    radial-gradient(ellipse at 38% 84%,rgba(239,188,75,.21),transparent 32%),
+    linear-gradient(180deg,#253862 0 39%,#42685f 40% 61%,#163d2f 62% 100%);
+  border-color:rgba(255,229,158,.24);box-shadow:0 38px 100px rgba(0,7,10,.5),inset 0 1px rgba(255,255,255,.18);
+}
+.heroGarden::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 15% 76%,rgba(255,185,65,.19),transparent 13%),
+    radial-gradient(circle at 86% 63%,rgba(241,136,80,.14),transparent 14%),
+    linear-gradient(90deg,rgba(4,23,24,.22),transparent 25%,transparent 75%,rgba(3,20,22,.18));
+}
+.welcomeCopy{
+  padding:38px 36px;border-radius:34px;
+  background:linear-gradient(150deg,rgba(12,42,44,.88),rgba(9,28,35,.76));
+  border:1px solid rgba(255,229,153,.2);box-shadow:var(--deep-shadow);backdrop-filter:blur(18px);
+}
+.welcomeCopy:before{height:3px;width:110px;top:20px;left:36px;background:linear-gradient(90deg,var(--amber-bright),transparent)}
+.welcomeCopy h1{font-size:clamp(2.7rem,5vw,4.7rem);color:#fff5d5;text-shadow:0 3px 22px rgba(0,0,0,.22)}
+.welcomeCopy p{color:rgba(255,255,255,.82);font-size:1.08rem}
+.promiseRow{gap:0;margin:25px 0 28px;border-top:1px solid rgba(255,255,255,.11);border-bottom:1px solid rgba(255,255,255,.11)}
+.promiseRow span{background:transparent;border:0;border-right:1px solid rgba(255,255,255,.12);border-radius:0;padding:12px 14px;color:#f2ddb1}
+.promiseRow span:first-child{padding-left:0}.promiseRow span:last-child{border-right:0}
+
+/* Chapter map — a route, not a dashboard grid. */
+.mapScreen{padding-top:28px}
+.mapIntro{
+  min-height:220px;color:white;overflow:hidden;position:relative;
+  background:
+    radial-gradient(circle at 86% 24%,rgba(243,199,93,.26),transparent 20%),
+    radial-gradient(circle at 15% 115%,rgba(60,132,87,.42),transparent 38%),
+    linear-gradient(135deg,rgba(12,37,43,.97),rgba(23,52,64,.9));
+  border-color:rgba(255,224,140,.2);box-shadow:var(--deep-shadow);
+}
+.mapIntro::after{content:"";position:absolute;inset:auto 0 0;height:60px;background:linear-gradient(180deg,transparent,rgba(2,16,17,.26));pointer-events:none}
+.mapIntro h1{color:#fff5d8;max-width:840px}.mapIntro p{color:rgba(255,255,255,.72)}
+.pipPortrait{background:linear-gradient(145deg,#d7e7c7,#9dbd86);box-shadow:0 18px 45px rgba(0,0,0,.25),0 0 0 8px rgba(255,255,255,.06)}
+.mapLayout{grid-template-columns:minmax(0,1fr) 330px;gap:22px;margin-top:22px}
+.chapterPath.card{
+  color:white;background:linear-gradient(150deg,rgba(8,27,32,.82),rgba(12,38,42,.63));
+  border-color:rgba(255,232,168,.15);backdrop-filter:blur(16px);box-shadow:var(--deep-shadow);
+}
+.chapterPath h2{color:#fff3cf}.chapterPath .textButton{color:#f0d17a}
+.nextLessonPanel{margin-top:18px;padding:16px 18px;border:1px solid rgba(255,222,128,.18);box-shadow:0 18px 36px rgba(0,8,10,.28)}
+.levelMap{display:block;position:relative;margin-top:22px;padding:4px 0 10px 18px}
+.levelMap::before{content:"";position:absolute;left:39px;top:34px;bottom:24px;width:2px;background:linear-gradient(180deg,rgba(255,216,109,.75),rgba(91,159,105,.55),rgba(255,255,255,.08));box-shadow:0 0 15px rgba(255,215,106,.2)}
+.actDivider{position:relative;z-index:2;margin:24px 0 10px;padding-left:54px;color:#e8d59a;letter-spacing:.16em}
+.actDivider:before{display:none}.actDivider:after{background:linear-gradient(90deg,rgba(255,224,140,.3),transparent)}
+.levelNode{
+  width:100%;display:grid;grid-template-columns:58px minmax(0,1fr) auto;grid-template-rows:auto auto auto;
+  align-items:center;gap:2px 12px;min-height:0;margin:0 0 5px;padding:11px 14px 11px 4px;
+  color:white;background:transparent;border:1px solid transparent;border-radius:20px;box-shadow:none;overflow:visible;
+}
+.levelNode:hover:not(:disabled){transform:translateX(5px);background:rgba(255,255,255,.055);border-color:rgba(255,227,144,.1);box-shadow:none}
+.levelNode.current{outline:0;background:linear-gradient(90deg,rgba(240,190,70,.16),rgba(255,255,255,.035));border-color:rgba(255,218,112,.24)}
+.levelNode.completed{background:linear-gradient(90deg,rgba(72,139,91,.18),transparent)}
+.levelNode:disabled{opacity:.4;filter:none}
+.levelNode .levelNumber{grid-column:1;grid-row:1 / 4;z-index:3;width:44px;height:44px;background:linear-gradient(145deg,#335e4b,#183d32);color:#e9f0df;border:2px solid rgba(255,255,255,.12);box-shadow:0 8px 20px rgba(0,0,0,.26)}
+.levelNode.current .levelNumber{background:linear-gradient(145deg,#ffd66f,#c88d2d);color:#433116;box-shadow:0 0 0 5px rgba(255,211,101,.12),0 8px 22px rgba(0,0,0,.3)}
+.levelNode.completed .levelNumber{background:linear-gradient(145deg,#7cb47c,#39734f)}
+.levelNode h3{grid-column:2;grid-row:1;margin:0;color:#fff6da;font-size:1rem}
+.levelNode p{grid-column:2 / 4;grid-row:2;color:rgba(255,255,255,.62);font-size:.69rem;margin:2px 0 0}
+.levelNode .nodeMeta{grid-column:2 / 4;grid-row:3;color:rgba(237,215,157,.68);margin-top:4px}
+.levelNode .nodeStars{position:static;grid-column:3;grid-row:1;color:#f1cf70;font-size:.72rem}
+.levelNode .nodeKind{right:18px;bottom:1px;font-size:38px;opacity:.07}
+.gardenJournal.card,.notebookCard.card{
+  position:sticky;top:84px;padding-left:31px;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 31px,rgba(100,84,50,.06) 32px),
+    linear-gradient(145deg,#fff9e8,#ecdfbf);
+  border-color:rgba(255,242,203,.74);box-shadow:var(--paper-shadow);overflow:hidden;
+}
+.gardenJournal.card::before,.notebookCard.card::before{
+  content:"";position:absolute;left:9px;top:18px;bottom:18px;width:13px;
+  background:repeating-radial-gradient(circle at 50% 7px,#6d6254 0 3px,transparent 3.5px 15px);
+  opacity:.48;
+}
+.journalStats{grid-template-columns:1fr;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);padding:8px 0}
+.journalStat{display:flex;justify-content:space-between;align-items:center;background:transparent;border-radius:0;padding:8px 2px;border-bottom:1px solid var(--paper-line)}
+.journalStat:last-child{border-bottom:0}.journalStat strong{margin:0;font-family:Georgia,serif;font-size:1.05rem}
+.habit{background:rgba(87,112,72,.08);border:1px solid rgba(74,97,65,.08)}
+
+/* Lesson shell */
+.playScreen{max-width:1320px}
+.playTopline{padding:0 4px;margin:10px 0 14px}
+.missionCard.card{
+  color:white;padding:24px 27px;align-items:center;overflow:hidden;position:relative;
+  background:
+    radial-gradient(circle at 88% 15%,rgba(241,191,77,.2),transparent 22%),
+    linear-gradient(135deg,rgba(12,37,43,.96),rgba(17,50,57,.88));
+  border-color:rgba(255,224,139,.18);box-shadow:var(--deep-shadow);
+}
+.missionCard.card::after{content:"";position:absolute;inset:auto 0 0;height:4px;background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:.65}
+.missionCard h1{color:#fff5d8;font-size:clamp(2rem,4vw,3.1rem)}
+.missionCard p{color:rgba(255,255,255,.67);font-size:.94rem}
+.missionCard .kicker{color:#f0d081;opacity:.95}
+.lessonBudget{background:rgba(0,0,0,.23)!important;border:1px solid rgba(255,226,143,.15);color:white;box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.lessonBudget span{color:rgba(255,255,255,.62)!important}.lessonBudget strong{color:#ffd66d}
+.teacherGuide.card{
+  padding:10px 12px;margin-top:14px;color:white;
+  background:linear-gradient(135deg,rgba(9,29,35,.78),rgba(20,50,55,.7));
+  border-color:rgba(255,232,170,.13);box-shadow:0 18px 42px rgba(0,8,10,.2);backdrop-filter:blur(15px);
+}
+.teacherRole{background:rgba(255,249,226,.95);border:0;box-shadow:inset 0 1px white}.teacherRole p{color:#29493b}
+.teachingSteps>div{color:rgba(255,255,255,.55)}
+.teachingSteps b{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+.teachingSteps>div.active{background:linear-gradient(135deg,#fff8e4,#ead9aa);color:#244536;box-shadow:0 10px 26px rgba(0,0,0,.2)}
+.teachingSteps>div.complete{color:#c2dcae}.teachingSteps>div.complete b{background:#538b60}
+.phaseRibbon{max-width:620px;margin:12px auto 0;background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.08);backdrop-filter:blur(12px)}
+.playColumns{grid-template-columns:minmax(0,1fr) 328px;gap:20px;margin-top:18px}
+.teachingCard.card{padding:21px 21px 18px;border-color:rgba(255,231,168,.72);box-shadow:var(--paper-shadow);overflow:hidden}
+.teachingCard.card::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(130deg,rgba(255,255,255,.22),transparent 28%)}
+.teachingCard>.sectionHeading,.teachingCard>.sectionLead,.teachingCard>.teachingStepPrompt,.teachingCard>.lessonGrid,.teachingCard>.teachPanel,.teachingCard>.recommendedReason,.teachingCard>.lessonTrailLabel,.teachingCard>.lessonTrail,.teachingCard>.teachingFooter{position:relative;z-index:1}
+.teachingCard h2{font-size:1.55rem}
+.teachingStepPrompt{border-radius:18px;background:linear-gradient(135deg,#173e34,#235846);box-shadow:0 12px 25px rgba(19,69,48,.18)}
+.teachingStepPrompt.step-test{background:linear-gradient(135deg,#5f4a82,#3c3f70)}
+
+/* Character selection is a rail, not a tile grid. */
+.lessonGrid{
+  display:flex;grid-template-columns:none;gap:12px;overflow-x:auto;overscroll-behavior-inline:contain;
+  scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(58,94,69,.28) transparent;
+  margin:12px -5px 0;padding:7px 5px 16px;
+}
+.lessonGrid::-webkit-scrollbar{height:7px}.lessonGrid::-webkit-scrollbar-thumb{background:rgba(58,94,69,.24);border-radius:999px}
+.lessonCard{
+  flex:0 0 170px;scroll-snap-align:start;min-height:218px;padding:14px 13px 39px;
+  display:flex;flex-direction:column;align-items:flex-start;
+  background:linear-gradient(160deg,#fffaf0,#e9ddc0);border:1px solid rgba(87,87,61,.12);border-radius:25px 25px 19px 19px;
+  box-shadow:0 10px 25px rgba(36,48,35,.1),inset 0 1px white;
+}
+.lessonCard::after{content:"";position:absolute;left:12px;right:12px;top:103px;height:1px;background:linear-gradient(90deg,transparent,rgba(88,75,48,.15),transparent)}
+.lessonCard .portraitMini{
+  width:76px;height:76px;margin:0 auto 7px;align-self:center;padding:7px;border-radius:50%;
+  background:radial-gradient(circle at 40% 30%,#fff9df,#cfe1bd 72%);box-shadow:0 8px 18px rgba(45,75,54,.15),inset 0 1px white;
+}
+.lessonCard strong{font-family:Georgia,serif;font-size:.9rem;margin-top:7px;color:#253f34}
+.lessonCard .caseSummary{font-size:.68rem;line-height:1.4;color:#677168}
+.lessonCard .infoMark{top:11px;right:11px;background:rgba(37,68,51,.09)}
+.lessonCard .pickLabel{left:13px;bottom:11px;padding:5px 10px;background:#dbe5cf;color:#315b42}
+.lessonCard:hover:not(:disabled),.lessonCard:focus-visible{transform:translateY(-5px) rotate(-.4deg);background:#fff7df;box-shadow:0 18px 34px rgba(34,54,39,.16)}
+.lessonCard.selected,.lessonCard.guidedChoice{background:linear-gradient(160deg,#fff9e6,#f6df9d);border-color:#dfa83d;box-shadow:0 0 0 4px rgba(238,187,77,.16),0 20px 38px rgba(63,55,27,.18)}
+.lessonCard.used{background:linear-gradient(160deg,#f0f5e7,#d2e1c5);opacity:.86}
+.lessonCard.hasPrediction{padding-bottom:57px}.casePredictionBadge{left:12px;right:12px;bottom:11px}
+
+.teachPanel{
+  margin-top:8px;padding:17px;border-radius:23px;
+  background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(241,229,200,.88));
+  border:1px solid rgba(83,78,56,.12);box-shadow:inset 0 1px white,0 10px 25px rgba(41,55,39,.08);
+}
+.teachPanel--empty{min-height:90px;background:linear-gradient(135deg,rgba(57,104,75,.08),rgba(255,255,255,.42));border-style:dashed}
+.selectedCaseHeader{gap:13px}.selectedCaseHeader .portraitMini{width:68px;height:68px;padding:6px;border-radius:50%;background:#e3eacb;box-shadow:0 8px 18px rgba(48,74,53,.12)}
+.selectedCaseHeader strong{font-family:Georgia,serif;font-size:1.02rem}.selectedCaseEyebrow{color:#7c6a45}
+.actionQuestion{margin-top:14px;padding-top:12px;border-top:1px solid rgba(85,79,56,.12)}
+.actionQuestion strong{font-family:Georgia,serif;font-size:1.18rem}
+.actionChoices{gap:12px}.actionButton{position:relative;min-height:88px;padding:16px 16px 15px 20px;border:1px solid rgba(50,74,58,.1);border-radius:19px;box-shadow:0 8px 18px rgba(47,61,45,.08),inset 0 1px white;overflow:hidden}
+.actionButton::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:#659a6a}
+.actionButton.tone-cautious::before,.actionButton.tone-firm::before{background:#cb7656}.actionButton.tone-work::before{background:#5a8eb1}
+.actionButton:hover{transform:translateY(-3px);box-shadow:0 15px 28px rgba(45,59,43,.14)}
+.lessonTrail{min-height:32px}.lessonChip{background:rgba(60,101,73,.1);border:1px solid rgba(60,101,73,.09);padding:7px 10px}
+.teachingFooter{align-items:center}.teachingFooter .button--primary{min-width:250px;background:linear-gradient(135deg,#397e52,#1f5339);box-shadow:0 12px 28px rgba(27,87,55,.26)}
+
+.notebookCard.card{top:84px;transform:rotate(.18deg);border-radius:21px 30px 26px 20px}
+.notebookTitleRow{border-bottom:1px solid var(--paper-line);padding-bottom:10px}.notebookTitleRow h2{font-size:1.2rem}
+.notebookEmptyState{background:rgba(112,78,143,.08);border:1px dashed rgba(103,75,133,.22)}
+.predictionPanel{background:linear-gradient(145deg,#33375e,#664c7d);box-shadow:0 12px 26px rgba(50,42,91,.18)}
+.proofItem{background:rgba(75,95,69,.055);border-radius:13px}.proofItem.complete{background:rgba(75,139,83,.12)}
+.researchLens div{background:rgba(91,74,55,.06)}
+
+/* The animation stage should feel like a window into the garden, not another form card. */
+.worldCard.card{
+  margin-top:20px;padding:18px;color:white;
+  background:linear-gradient(145deg,rgba(8,26,31,.82),rgba(13,42,45,.66));
+  border-color:rgba(255,228,151,.15);box-shadow:var(--deep-shadow);backdrop-filter:blur(14px);
+}
+.worldCard:before{left:90px;right:90px;background:linear-gradient(90deg,transparent,#f2c859,transparent)}
+.worldHeader .kicker{color:#e7c86e}.worldHeader p{color:rgba(255,255,255,.67)}
+.world{height:355px;margin-top:15px;border:1px solid rgba(255,241,195,.3);border-radius:28px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 22px 50px rgba(0,8,9,.34);overflow:hidden}
+.certaintyBadge{background:rgba(255,255,255,.1);color:#fff5d4;border:1px solid rgba(255,255,255,.1)}
+.worldControls .button--quiet{color:white;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1)}
+.pipLine{color:rgba(255,255,255,.72)}
+
+/* Test and reflection share the same scene materials. */
+.challengeCard.card,.reflectionCard.card{margin-top:20px;padding:23px;border-color:rgba(255,232,170,.7)}
+.challengeCard.card{background:linear-gradient(145deg,#fff9e9,#eadcba)}
+.challengeStrip{gap:12px}
+.challengeCase{border-radius:21px;background:rgba(255,255,255,.48);box-shadow:0 10px 23px rgba(50,57,43,.08)}
+.challengePolicyChip{background:linear-gradient(135deg,#324769,#5b4778)}
+.reflectionCard.card{background:linear-gradient(145deg,#fff9e9,#eee0bf)}
+.reflectionStars{font-size:1.7rem;filter:drop-shadow(0 5px 8px rgba(194,137,36,.25))}
+.ruleCompare{gap:13px}.ruleCompare article{border-radius:20px;background:rgba(255,255,255,.45);box-shadow:inset 0 1px white}.ruleCompare article:first-child{background:linear-gradient(145deg,#e5f0dd,#cfe2c6)}
+.evidenceExplanation,.misunderstandingPanel{border-radius:20px}
+.reflectionActions{padding-top:15px;border-top:1px solid var(--paper-line)}
+
+/* Drawers and story panels */
+.modalBackdrop,.drawerBackdrop{background:rgba(2,14,17,.72);backdrop-filter:blur(12px)}
+.modalCard,.drawerPanel{background:linear-gradient(145deg,#fff9e9,#eadcba);border:1px solid rgba(255,240,197,.74);box-shadow:0 36px 100px rgba(0,7,9,.52)}
+.storyArt{border-radius:22px;box-shadow:inset 0 1px rgba(255,255,255,.45)}
+
+/* Motion is restrained and tied to focus. */
+@media (prefers-reduced-motion:no-preference){
+  .card{transition:box-shadow .2s ease,border-color .2s ease}
+  .nextLessonIcon{animation:lanternBreathe 3.2s ease-in-out infinite}
+  @keyframes lanternBreathe{50%{filter:brightness(1.08);box-shadow:0 7px 25px rgba(237,188,65,.38)}}
+}
+
+@media(max-width:1050px){
+  .screen,.appHeader{max-width:980px}
+  .mapLayout{grid-template-columns:minmax(0,1fr) 290px}
+  .playColumns{grid-template-columns:minmax(0,1fr) 290px}
+  .lessonCard{flex-basis:160px}
+}
+@media(max-width:900px){
+  .screen{padding-inline:18px}.appHeader{margin-inline:12px}
+  .welcomeScreen{grid-template-columns:1fr;gap:20px}.heroGarden{height:430px;border-radius:42px}.welcomeCopy{margin-top:-80px;margin-inline:24px;z-index:2}
+  .mapLayout,.playColumns{grid-template-columns:1fr}.gardenJournal.card,.notebookCard.card{position:relative;top:auto;transform:none}
+  .chapterPath.card{padding:16px}.levelMap{padding-left:8px}.levelMap::before{left:29px}.levelNode{grid-template-columns:48px minmax(0,1fr) auto}.levelNode .levelNumber{width:38px;height:38px}
+  .teacherGuide.card{grid-template-columns:1fr}.teachingSteps{grid-template-columns:repeat(4,1fr)}
+  .notebookCard{order:2}.worldCard{order:3}
+}
+@media(max-width:700px){
+  .appHeader{padding:10px 12px;border-radius:0 0 18px 18px}.brandMark{width:36px;height:36px}.brandButton strong{font-size:1rem}.brandButton small{font-size:.62rem}
+  .screen{padding:15px 12px 74px}.welcomeCopy{margin-inline:4px;padding:27px 22px}.welcomeCopy h1{font-size:2.65rem}.promiseRow{display:grid;grid-template-columns:1fr}.promiseRow span{border-right:0;border-bottom:1px solid rgba(255,255,255,.1);padding:9px 0}.promiseRow span:last-child{border-bottom:0}
+  .mapIntro{min-height:0;padding:20px}.mapIntro h1{font-size:1.75rem}.pipPortrait{width:86px;height:86px}
+  .nextLessonPanel{grid-template-columns:auto 1fr}.nextLessonPanel .button{grid-column:1/-1;width:100%}
+  .levelNode{grid-template-columns:44px minmax(0,1fr);padding-right:8px}.levelNode .nodeStars{grid-column:2;grid-row:3;justify-self:end}.levelNode p,.levelNode .nodeMeta{grid-column:2}.levelNode .nodeKind{display:none}
+  .missionCard.card{display:grid;padding:19px}.lessonBudget{width:100%;justify-content:start!important;text-align:left!important;margin-top:4px}
+  .teacherGuide.card{padding:9px}.teacherRole{padding:10px}.teachingSteps{grid-template-columns:1fr 1fr;gap:5px}.teachingSteps>div{padding:8px}
+  .phaseRibbon{margin-inline:0}.playColumns{gap:12px}.teachingCard.card{padding:16px 13px}.teachingCard h2{font-size:1.35rem}
+  .lessonGrid{margin-inline:-4px;padding-inline:4px}.lessonCard{flex-basis:148px;min-height:208px}.lessonCard .portraitMini{width:66px;height:66px}
+  .actionChoices.two,.actionChoices.three{grid-template-columns:1fr}.teachingFooter{grid-template-columns:1fr}.teachingFooter .button,.teachingFooter .button--primary{width:100%;min-width:0}
+  .worldCard.card{padding:12px}.world{height:300px;border-radius:22px}.worldHeader{display:grid}.certaintyBadge{justify-self:start}.worldControls{gap:8px}
+  .ruleCompare{grid-template-columns:1fr}.reflectionActions{display:grid;grid-template-columns:1fr}.reflectionActions .button{width:100%}
+}
+@media(max-width:430px){
+  .appHeader{margin-inline:0}.headerActions{gap:5px}.roundButton{width:36px;height:36px}.chapterProgressWrap{padding:6px 8px}.chapterProgressLabel{font-size:.62rem}
+  .heroGarden{height:340px;border-radius:30px}.welcomeCopy{margin-top:-46px}.welcomeCopy h1{font-size:2.25rem}
+  .missionCard h1{font-size:1.8rem}.teacherRoleIcon{width:30px;height:30px}.teacherRole p{font-size:.72rem}
+  .teachingSteps strong{font-size:.67rem}.teachingSteps small{display:none}.teachingSteps>div{grid-template-columns:26px 1fr}.teachingSteps b{width:25px;height:25px}
+  .lessonCard{flex-basis:136px;min-height:200px;padding-inline:11px}.lessonCard .caseSummary{font-size:.63rem}.lessonCard strong{font-size:.82rem}
+  .notebookCard.card,.gardenJournal.card{padding-left:26px}.world{height:280px}
+}
+
+/* Final refinement — continuous progress tracks instead of segmented dashboard tiles. */
+.teacherGuide.card{grid-template-columns:250px minmax(0,1fr);gap:22px;padding:15px 20px}
+.teacherRole{padding:6px 18px 6px 2px;background:transparent;border:0;border-right:1px solid rgba(255,234,176,.16);box-shadow:none}
+.teacherRole strong{color:#f2d67d}.teacherRole p{color:rgba(255,255,255,.78)}
+.teachingSteps{position:relative;gap:0;align-items:start}
+.teachingSteps::before{content:"";position:absolute;left:12.5%;right:12.5%;top:23px;height:2px;background:rgba(255,255,255,.11)}
+.teachingSteps>div{position:relative;z-index:1;display:block;text-align:center;padding:2px 8px;color:rgba(255,255,255,.46);border:0;background:transparent!important;box-shadow:none!important;transform:none!important}
+.teachingSteps b{margin:0 auto 7px;width:42px;height:42px;border:4px solid #102f37;background:#29464b;color:rgba(255,255,255,.68);box-shadow:0 0 0 2px rgba(255,255,255,.04)}
+.teachingSteps strong{font-size:.72rem}.teachingSteps small{font-size:.61rem;color:inherit}
+.teachingSteps>div.active{color:#fff5d8}.teachingSteps>div.active b{background:linear-gradient(145deg,#ffdd78,#c98d2c);border-color:#17383d;color:#443014;box-shadow:0 0 0 4px rgba(255,213,103,.1),0 7px 20px rgba(0,0,0,.22)}
+.teachingSteps>div.complete{color:#bcd9b1}.teachingSteps>div.complete b{background:#4d8b60;border-color:#16383a;color:white}
+.phaseRibbon{display:flex;justify-content:center;gap:38px;max-width:none;padding:0;margin:14px 0 2px;background:transparent;border:0;backdrop-filter:none}
+.phaseRibbon span{position:relative;padding:8px 4px 12px;border-radius:0;background:transparent!important;box-shadow:none!important;transform:none!important;color:rgba(255,255,255,.44)}
+.phaseRibbon span::after{content:"";position:absolute;left:50%;right:50%;bottom:0;height:2px;background:var(--amber);transition:left .18s ease,right .18s ease}
+.phaseRibbon span.active{color:#fff0c4}.phaseRibbon span.active::after{left:0;right:0}.phaseRibbon span.complete{color:#a9cda7}
+.phaseRibbon b{background:rgba(255,255,255,.08)}.phaseRibbon span.active b{background:#d2a33d}.phaseRibbon span.complete b{background:#4d8b60}
+.levelNode:disabled{opacity:.56}.levelNode:disabled h3{color:rgba(255,246,218,.7)}.levelNode:disabled p{color:rgba(255,255,255,.42)}
+@media(max-width:900px){.teacherGuide.card{grid-template-columns:1fr;gap:10px}.teacherRole{border-right:0;border-bottom:1px solid rgba(255,234,176,.14);padding:5px 4px 12px}.teachingSteps::before{left:11%;right:11%}}
+@media(max-width:700px){.teacherGuide.card{padding:12px}.teachingSteps{grid-template-columns:repeat(4,1fr)}.teachingSteps::before{left:12%;right:12%;top:18px}.teachingSteps b{width:34px;height:34px;border-width:3px}.teachingSteps small{display:none}.phaseRibbon{gap:20px}.phaseRibbon span{font-size:.68rem}}
+@media(max-width:430px){.teachingSteps strong{font-size:.61rem}.teachingSteps>div{padding-inline:2px}.teachingSteps b{width:31px;height:31px}.teachingSteps::before{top:16px}.phaseRibbon{gap:12px}.phaseRibbon span{font-size:.62rem}}
+
+/* Garden-stage depth pass: richer atmosphere without changing scene logic. */
+.worldSky{
+  background:
+    radial-gradient(circle at 78% 24%,rgba(255,228,137,.18),transparent 20%),
+    linear-gradient(180deg,#8fc7d7 0%,#c4ddd4 46%,#d9dfbf 60%,transparent 61%);
+}
+.worldSky::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 14% 35%,rgba(255,255,255,.24),transparent 10%),radial-gradient(circle at 88% 62%,rgba(255,211,104,.13),transparent 12%)}
+.worldBack{bottom:88px;height:132px;filter:drop-shadow(0 -6px 16px rgba(31,77,48,.16));background:
+  radial-gradient(ellipse at 4% 100%,#315f45 0 28%,transparent 29%),
+  radial-gradient(ellipse at 19% 100%,#4a8358 0 35%,transparent 36%),
+  radial-gradient(ellipse at 38% 100%,#5c9862 0 32%,transparent 33%),
+  radial-gradient(ellipse at 57% 100%,#3f7750 0 37%,transparent 38%),
+  radial-gradient(ellipse at 77% 100%,#5a9360 0 34%,transparent 35%),
+  radial-gradient(ellipse at 96% 100%,#386a49 0 32%,transparent 33%)}
+.worldBack::before{content:"";position:absolute;left:0;right:0;bottom:3px;height:48px;opacity:.55;background:
+  radial-gradient(circle at 6% 65%,#e9b757 0 3px,transparent 4px),
+  radial-gradient(circle at 14% 78%,#d77470 0 3px,transparent 4px),
+  radial-gradient(circle at 27% 58%,#f0d16c 0 2px,transparent 3px),
+  radial-gradient(circle at 44% 78%,#c8799c 0 3px,transparent 4px),
+  radial-gradient(circle at 66% 62%,#efb65e 0 3px,transparent 4px),
+  radial-gradient(circle at 84% 76%,#d87979 0 3px,transparent 4px),
+  radial-gradient(circle at 94% 54%,#f0d16c 0 2px,transparent 3px)}
+.worldGround{height:116px;background:
+  radial-gradient(ellipse at 50% 100%,rgba(197,170,116,.5) 0 28%,transparent 29%),
+  linear-gradient(180deg,#6c9d62 0 16%,#6a5a45 17% 100%)}
+.worldFence{opacity:.86;filter:drop-shadow(0 5px 5px rgba(56,42,24,.12))}
+.world--night .worldSky{background:radial-gradient(circle at 78% 23%,rgba(245,231,178,.2),transparent 21%),linear-gradient(180deg,#25345d,#596779 58%,transparent 60%)}
+.world--rain .worldSky{background:linear-gradient(180deg,#657d8b,#a5b2ad 58%,transparent 60%)}
+
+/* 1.8 narrative clarity layer */
+.missionCard{grid-template-columns:minmax(0,1.05fr) minmax(320px,.9fr) auto;align-items:stretch;gap:18px}
+.missionRule{align-self:center}
+.missionStory{display:flex;gap:13px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:linear-gradient(145deg,rgba(25,62,48,.96),rgba(15,42,36,.9));border:1px solid rgba(255,218,132,.34);box-shadow:inset 0 1px rgba(255,255,255,.08),0 14px 32px rgba(5,25,20,.18);color:#fff8dc}
+.missionCharacter{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;font-size:1.3rem;background:radial-gradient(circle at 35% 30%,#fff3b4,#d78d2c 65%,#6f3c17);box-shadow:0 0 0 3px rgba(255,230,151,.18)}
+.missionStory small{display:block;color:#f8cf78;text-transform:uppercase;letter-spacing:.08em;font-weight:900;font-size:.68rem;margin-bottom:4px}
+.missionStory strong{display:block;font-family:var(--display-font);font-size:1.05rem;line-height:1.18;margin-bottom:5px}
+.missionStory p{margin:0;color:rgba(255,249,226,.78);font-size:.82rem;line-height:1.35}
+.storyCard #storyBody{white-space:pre-line}.storyArt{display:grid;place-items:center;font-size:2.3rem;color:#fff3b1;text-shadow:0 3px 18px rgba(239,165,57,.65)}
+.challengeCard .sectionLead{font-size:1rem;max-width:780px}.reflectionSummary{font-size:1rem}
+@media(max-width:1050px){.missionCard{grid-template-columns:1fr auto}.missionStory{grid-column:1/-1;order:3}.missionRule{grid-column:1}.lessonBudget{grid-column:2;grid-row:1}}
+@media(max-width:680px){.missionCard{display:flex;flex-direction:column}.missionStory{order:2}.lessonBudget{order:3;align-self:stretch}}
+
+/* 2.0 mobile narrative hierarchy: story first, progress second. */
+@media(max-width:680px){
+  .missionCard.card{display:flex;flex-direction:column;gap:14px}
+  .missionRule{order:1;width:100%}
+  .missionStory{order:2;width:100%}
+  .lessonBudget{order:3;width:auto!important;align-self:flex-start!important;display:flex!important;align-items:baseline;gap:5px;padding:8px 12px!important}
+  .lessonBudget .budgetLabel{display:inline!important;grid-column:auto;font-size:.58rem!important;margin-right:4px}
+  .lessonBudget strong{font-size:1.15rem!important}
+  .lessonBudget #lessonBudgetText{font-size:.66rem;max-width:none}
+}
+
+/* 2.1 restraint pass: less repeated instruction, same interaction hierarchy. */
+.phaseRibbon{margin-bottom:14px}
+.teachingCard .sectionLead{max-width:720px}
+@media(max-width:700px){.phaseRibbon{margin-bottom:10px}}

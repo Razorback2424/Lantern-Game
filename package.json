@@ -1,0 +1,11 @@
+{
+  "name": "rule-garden-lantern-festival-review-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "screenshots": "node capture-screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "latest"
+  }
+}

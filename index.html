@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#173c31" />
+  <meta name="description" content="Rule Garden: The Last Promise — teach Pip living rules by example and reshape the future of Mossgrove." />
+  <title>Rule Garden — The Last Promise</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="modern.css" />
+  <link rel="stylesheet" href="cinematic.css" />
+  <link rel="stylesheet" href="assets.css" />
+  <link rel="stylesheet" href="qa-fixes.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="appHeader">
+      <button id="homeButton" class="brandButton" aria-label="Return to chapter map">
+        <span class="brandMark" aria-hidden="true">✦</span>
+        <span><strong>Rule Garden</strong><small>The Last Promise</small></span>
+      </button>
+      <div class="headerActions">
+        <div class="chapterProgressWrap"><div id="chapterProgress" class="chapterProgress" aria-label="Chapter progress"></div><span id="chapterProgressLabel" class="chapterProgressLabel">0 / 12</span></div>
+        <button id="soundButton" class="roundButton" aria-label="Toggle sound">♪</button>
+        <button id="settingsButton" class="roundButton" aria-label="Open settings">⚙</button>
+      </div>
+    </header>
+    <div id="storageBanner" class="storageBanner hidden" role="status">Progress cannot be saved in this browser session. The game will still play, but reloading will reset this visit.</div>
+
+    <main>
+      <section id="welcomeScreen" class="screen welcomeScreen">
+        <div class="heroGarden" aria-hidden="true">
+          <div class="heroMoon"></div>
+          <div class="heroHill hillBack"></div>
+          <div class="heroHill hillFront"></div>
+          <div class="lantern l1"></div><div class="lantern l2"></div><div class="lantern l3"></div>
+          <div id="heroPip" class="pip pip--hero mood-curious">
+            <div class="pip-ear pip-ear--left"></div><div class="pip-ear pip-ear--right"></div>
+            <div class="pip-body"><div class="pip-eye eye-left"></div><div class="pip-eye eye-right"></div><div class="pip-mouth"></div><div class="pip-cheek cheek-left"></div><div class="pip-cheek cheek-right"></div></div>
+            <div class="pip-feet"></div><div class="pip-accessories"></div>
+          </div>
+        </div>
+        <div class="welcomeCopy">
+          <div class="kicker">CHAPTER ONE</div>
+          <h1>The Last Promise</h1>
+          <p>Someone is stealing the magical Promises that protect Mossgrove. Pip has awakened from a cracked Flame—and you are the only Listener who can teach him what the Lantern Heart has forgotten.</p>
+          <div class="promiseRow">
+            <span>Uncover the stolen Promises</span><span>Teach Pip through living examples</span><span>Decide what a good rule should protect</span>
+          </div>
+          <button id="startButton" class="button button--primary button--large">Begin the chapter</button>
+          <button id="continueButton" class="button button--ghost hidden">Continue the story</button>
+          <button id="resumeLessonButton" class="button button--quiet hidden">Resume unfinished lesson</button>
+        </div>
+      </section>
+
+      <section id="mapScreen" class="screen mapScreen hidden">
+        <div class="mapIntro card card--wide">
+          <div>
+            <div class="kicker">MOSSGROVE · FESTIVAL EVE</div>
+            <h1>Restore twelve stolen Promises before the Wilddark reaches Mossgrove.</h1>
+            <p id="mapStoryText">Each Promise reveals another piece of Sable’s path—and another truth Rowan tried to bury.</p>
+          </div>
+          <div class="pipPortrait" id="mapPipPortrait" aria-label="Pip portrait"></div>
+        </div>
+
+        <div class="mapLayout">
+          <section class="chapterPath card">
+            <div class="sectionHeading">
+              <div><div class="kicker">CHAPTER PATH</div><h2>The trail of missing Promises</h2></div>
+              <button id="reviewUnlockButton" class="textButton hidden">Reviewer unlock</button>
+            </div>
+            <div id="nextLessonPanel" class="nextLessonPanel" aria-live="polite">
+              <div class="nextLessonIcon" aria-hidden="true">✦</div>
+              <div><span>UP NEXT</span><strong id="nextLessonTitle">The Bridge of Embers</strong><small id="nextLessonCopy">Follow the first stolen Flame.</small></div>
+              <button id="nextLessonButton" class="button button--primary">Continue</button>
+            </div>
+            <div id="levelMap" class="levelMap"></div>
+          </section>
+
+          <aside class="gardenJournal card">
+            <div class="kicker">PIP'S JOURNAL</div>
+            <h2>What is changing</h2>
+            <div id="journalStats" class="journalStats"></div>
+            <div id="habitList" class="habitList"></div>
+            <div id="mistakeMemory" class="mistakeMemory hidden">
+              <span>RECENT MISUNDERSTANDING</span>
+              <strong id="mistakeMemoryTitle"></strong>
+              <small id="mistakeMemoryCopy"></small>
+              <button id="mistakeMemoryButton" class="button button--quiet">Revisit lesson</button>
+            </div>
+            <button id="resetProgressButton" class="button button--quiet">Reset chapter progress</button>
+          </aside>
+        </div>
+      </section>
+
+      <section id="playScreen" class="screen playScreen hidden">
+        <div class="playTopline">
+          <button id="backToMapButton" class="textButton">← Chapter map</button>
+          <div id="actLabel" class="actLabel"></div>
+          <div id="levelStars" class="levelStars" aria-label="Level stars">☆ ☆ ☆</div>
+        </div>
+
+        <section class="missionCard card">
+          <div class="missionRule">
+            <div class="kicker">THE PROMISE TO RESTORE</div>
+            <h1 id="levelTitle"></h1>
+            <p id="levelGoal"></p>
+          </div>
+          <div class="missionStory" aria-label="Story conflict">
+            <span id="missionCharacter" class="missionCharacter" aria-hidden="true">✦</span>
+            <div><small id="missionCharacterName">Promise in danger</small><strong id="missionHook"></strong><p id="missionStakes"></p></div>
+          </div>
+          <div class="lessonBudget" aria-label="Example progress">
+            <span class="budgetLabel">Examples</span>
+            <strong id="lessonCount">0</strong><span id="lessonBudgetText"> of 4 · 3 stars at 2</span>
+          </div>
+        </section>
+
+        <section id="teacherGuide" class="teacherGuide card" aria-labelledby="teacherGuideTitle">
+          <div class="teacherRole">
+            <span class="teacherRoleIcon" aria-hidden="true">★</span>
+            <div><strong id="teacherGuideTitle">Your job</strong><p>You know what the Promise should do. Show Pip examples, then let Pip try it alone.</p></div>
+          </div>
+          <div id="teachingSteps" class="teachingSteps" aria-label="How to teach Pip">
+            <div data-teach-step="pick"><b>1</b><span><strong>Pick a situation</strong><small>Choose a card.</small></span></div>
+            <div data-teach-step="act"><b>2</b><span><strong>Show the right action</strong><small>Choose what should happen.</small></span></div>
+            <div data-teach-step="repeat"><b>3</b><span><strong>Cover every part</strong><small>Use different examples.</small></span></div>
+            <div data-teach-step="test"><b>4</b><span><strong>Let Pip try</strong><small>Watch the Promise work.</small></span></div>
+          </div>
+        </section>
+
+        <nav id="phaseRibbon" class="phaseRibbon" aria-label="Lesson progress">
+          <span data-phase="teaching" class="active"><b>1</b> Teach Pip</span>
+          <span data-phase="exam"><b>2</b> Solo try</span>
+          <span data-phase="reflection"><b>3</b> What Pip learned</span>
+        </nav>
+
+        <div class="playColumns">
+          <section class="teachingCard card">
+            <div class="sectionHeading">
+              <div><div class="kicker">TEACH THE MISSING PROMISE</div><h2>Teach Pip with examples</h2></div>
+              <div class="teachingHeaderActions"><button id="clearLessonsButton" class="textButton" disabled>Clear</button><button id="hintButton" class="textButton">Ask Pip</button></div>
+            </div>
+            <p class="sectionLead">Pick a situation, then show Pip the right action. Use different examples until every part of the Promise is covered.</p>
+            <div id="teachingStepPrompt" class="teachingStepPrompt" role="status" aria-live="polite"></div>
+            <div id="lessonGrid" class="lessonGrid" aria-label="Situations you can show Pip"></div>
+            <p class="lessonRailHint" aria-hidden="true">Swipe to see more situations <span>→</span></p>
+            <div id="teachPanel" class="teachPanel teachPanel--empty">
+              <span class="emptyStepNumber">1</span><div><strong>Pick a situation above</strong><small>The action choices will appear here.</small></div>
+            </div>
+            <div id="recommendedReason" class="recommendedReason hidden"></div>
+            <div class="lessonTrailLabel">Examples shown</div>
+            <div id="lessonTrail" class="lessonTrail"></div>
+            <div class="teachingFooter">
+              <button id="undoLessonButton" class="button button--quiet" disabled>Undo last example</button>
+              <button id="beginChallengeButton" class="button button--primary" disabled>Let Pip try alone</button>
+            </div>
+          </section>
+
+          <aside id="notebookCard" class="notebookCard card">
+            <div class="notebookTitleRow">
+              <div><div class="kicker">PIP'S NOTEBOOK</div><h2 id="notebookHeading">No examples yet</h2></div>
+              <button id="toggleNotebookButton" class="notebookToggle textButton" aria-expanded="true" aria-controls="notebookBody">Hide</button>
+            </div>
+            <div id="notebookEmptyState" class="notebookEmptyState">
+              <span aria-hidden="true">1</span><div><strong>Show one example</strong><small>Then Pip will write down what he thinks.</small></div>
+            </div>
+            <div id="notebookBody" class="notebookBody hidden">
+              <p id="notebookCopy">Pip is waiting for examples.</p>
+              <div id="notebookMeter" class="notebookMeter"></div>
+              <div class="predictionPanel" aria-live="polite">
+                <span>PIP'S CURRENT GUESS</span>
+                <strong id="predictionRule">No guess yet</strong>
+                <small id="predictionCopy">Show one example to help Pip make a guess.</small>
+              </div>
+              <button id="togglePredictionButton" class="button button--quiet predictionToggle" aria-pressed="false" disabled>Preview Pip's choices</button>
+              <div class="proofHeader"><span>Parts of the rule</span><strong id="proofProgress">0 / 0</strong></div>
+              <div id="proofChecklist" class="proofChecklist" aria-label="Parts of the rule"></div>
+              <div id="researchLens" class="researchLens hidden">
+                <div><span>Rules Pip still thinks may be correct</span><strong id="consistentRuleCount">—</strong></div>
+                <div><span>Pip's simplest guess</span><strong id="currentGuess">—</strong></div>
+                <div><span>Average confidence</span><strong id="averageCertainty">—</strong></div>
+              </div>
+              <button id="focusSuggestedButton" class="button button--quiet hidden">Show a helpful example</button>
+            </div>
+          </aside>
+        </div>
+
+        <section class="worldCard card">
+          <div class="worldHeader">
+            <div>
+              <div class="kicker">PIP WATCHES AND LEARNS</div>
+              <p id="worldPrompt">Choose an action to play the example.</p>
+            </div>
+            <div id="certaintyBadge" class="certaintyBadge">Pip is curious</div>
+          </div>
+
+          <div id="world" class="world world--festival" aria-live="polite">
+            <div class="worldSky"><div class="sunOrMoon"></div><div class="cloud cloud--one"></div><div class="cloud cloud--two"></div></div>
+            <div class="worldBack"></div><div class="worldGround"></div><div class="worldFence"></div>
+            <div id="sceneProp" class="sceneProp"></div>
+            <div id="visitor" class="visitor" aria-hidden="true"></div>
+            <div id="effectLayer" class="effectLayer" aria-hidden="true"></div>
+
+            <div id="pip" class="pip mood-curious" aria-label="Pip is curious">
+              <div class="pip-ear pip-ear--left"></div><div class="pip-ear pip-ear--right"></div>
+              <div class="pip-body"><div class="pip-eye eye-left"></div><div class="pip-eye eye-right"></div><div class="pip-mouth"></div><div class="pip-cheek cheek-left"></div><div class="pip-cheek cheek-right"></div></div>
+              <div class="pip-feet"></div><div class="pip-accessories"></div>
+            </div>
+            <div id="thoughtBubble" class="thoughtBubble">Show me.</div>
+            <div id="sceneCaption" class="sceneCaption">Pip is ready for a lesson.</div>
+          </div>
+
+          <div class="worldControls">
+            <div class="worldControlButtons"><button id="replaySceneButton" class="button button--quiet" disabled>Replay scene</button><button id="skipSceneButton" class="button button--quiet hidden">Skip animation</button></div>
+            <div id="pipLine" class="pipLine">“I will choose the simplest rule that fits.”</div>
+          </div>
+        </section>
+
+        <section id="challengeCard" class="challengeCard card hidden">
+          <div class="sectionHeading">
+            <div><div class="kicker">PIP'S SOLO TRY</div><h2 id="challengeHeading">Pip uses the Promise without your help</h2></div>
+            <div class="challengeStatus"><span id="challengePolicyChip" class="challengePolicyChip">Pip chose a rule</span><span id="challengeConfidence" class="challengeConfidence" aria-live="polite">Waiting</span><div id="challengeScore" class="challengeScore">0 / 4</div></div>
+          </div>
+          <p id="challengeIntro" class="sectionLead"></p>
+          <div id="challengeStrip" class="challengeStrip"></div>
+        </section>
+
+        <section id="reflectionCard" class="reflectionCard card hidden">
+          <div class="reflectionHeader">
+            <div><div class="kicker">WHAT PIP LEARNED</div><h2 id="reflectionTitle"></h2></div>
+            <div id="reflectionStars" class="reflectionStars"></div>
+          </div>
+          <p id="reflectionSummary"></p>
+          <div id="ruleReveal" class="ruleReveal ruleCompare">
+            <article><span>INTENDED PROMISE</span><strong id="houseRuleName"></strong><small id="houseRuleDescription"></small></article>
+            <article><span>PIP LEARNED THIS PROMISE</span><strong id="learnedRuleName"></strong><small id="learnedRuleDescription"></small></article>
+          </div>
+          <div id="evidenceExplanation" class="evidenceExplanation"></div>
+          <div id="misunderstandingPanel" class="misunderstandingPanel"></div>
+          <div id="recommendedLessonPanel" class="recommendedLessonPanel hidden"><div><span>BEST NEXT EXAMPLE</span><strong id="recommendedLessonTitle"></strong><small id="recommendedLessonCopy"></small></div><button id="recommendedLessonButton" class="button button--quiet">Use this example</button></div>
+          <div class="reflectionActions">
+            <button id="replayExamButton" class="button button--quiet">Replay solo try</button>
+            <button id="reviseButton" class="button button--quiet">Change the examples</button>
+            <button id="completeLevelButton" class="button button--primary">Continue the story</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="storyModal" class="modal hidden" role="dialog" aria-hidden="true" aria-modal="true" aria-labelledby="storyTitle">
+      <div class="modalBackdrop"></div>
+      <div class="modalCard storyCard">
+        <div id="storyArt" class="storyArt"></div>
+        <div class="kicker" id="storyKicker"></div>
+        <h2 id="storyTitle"></h2>
+        <p id="storyBody"></p>
+        <button id="storyContinueButton" class="button button--primary button--large">Continue</button>
+      </div>
+    </div>
+
+    <div id="settingsDrawer" class="drawer hidden" role="dialog" aria-hidden="true" aria-modal="true" aria-label="Settings">
+      <div class="drawerBackdrop"></div>
+      <div class="drawerPanel">
+        <div class="sectionHeading"><div><div class="kicker">SETTINGS</div><h2>Garden options</h2></div><button id="closeSettingsButton" class="roundButton" aria-label="Close settings">×</button></div>
+        <label class="settingRow"><span><strong>Sound</strong><small>Soft chimes and scene cues</small></span><input id="soundToggle" type="checkbox" checked /></label>
+        <label class="settingRow"><span><strong>Reduced motion</strong><small>Shorten character and scene animation</small></span><input id="motionToggle" type="checkbox" /></label>
+        <label class="settingRow"><span><strong>Learning details</strong><small>Show extra details about Pip's guesses</small></span><input id="researchToggle" type="checkbox" /></label>
+        <label class="settingRow"><span><strong>Faster scenes</strong><small>Shorten example and solo-try animations</small></span><input id="quickToggle" type="checkbox" /></label>
+        <div class="keyboardGuide"><strong>Keyboard</strong><span><kbd>H</kbd> hint</span><span><kbd>U</kbd> undo</span><span><kbd>P</kbd> preview choices</span><span><kbd>N</kbd> fold notebook</span><span><kbd>Enter</kbd> let Pip try when ready</span><span><kbd>Esc</kbd> close or return</span></div>
+        <button id="closeSettingsBottomButton" class="button button--primary">Done</button><small class="buildStamp">Polish pass 2.1 · The Last Promise</small>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+    <div id="screenAnnouncer" class="srOnly" aria-live="polite"></div>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="levels.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
