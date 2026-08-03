@@ -1,0 +1,190 @@
+/* Mobile chapter map: one readable Promise per row. Presentation only. */
+@media (max-width:760px){
+  .mapScreen{
+    overflow-x:hidden;
+  }
+
+  .mapIntro{
+    display:block;
+    min-height:0;
+    padding:24px 20px;
+  }
+  .mapIntro h1{
+    position:relative;
+    z-index:2;
+    max-width:none;
+    margin-bottom:.75rem;
+    font-size:clamp(1.65rem,7vw,2rem);
+    line-height:1.08;
+    text-wrap:balance;
+  }
+  #mapStoryText{
+    position:relative;
+    z-index:2;
+    display:block!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    -webkit-line-clamp:unset!important;
+    -webkit-box-orient:initial!important;
+    mask-image:none!important;
+    -webkit-mask-image:none!important;
+  }
+  .mapIntro::after{
+    display:none;
+  }
+  .mapIntro .pipPortrait{
+    display:none;
+  }
+
+  .mapLayout,
+  .chapterPath,
+  .levelMap{
+    min-width:0;
+  }
+
+  .nextLessonPanel{
+    grid-template-columns:auto minmax(0,1fr)!important;
+    gap:12px;
+    padding:16px!important;
+  }
+  #nextLessonButton{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:54px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:12px 18px!important;
+    color:#3f3016!important;
+    -webkit-text-fill-color:#3f3016!important;
+    text-align:center!important;
+    line-height:1.2!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+
+  .levelMap{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:5px!important;
+    width:100%!important;
+    margin:18px 0 0!important;
+    padding:4px 0 8px 10px!important;
+    overflow:visible!important;
+    scroll-snap-type:none!important;
+  }
+  .levelMap::before{
+    left:31px!important;
+    right:auto!important;
+    top:28px!important;
+    bottom:22px!important;
+    width:2px!important;
+    height:auto!important;
+    background:linear-gradient(180deg,rgba(255,216,109,.75),rgba(91,159,105,.55),rgba(255,255,255,.08))!important;
+  }
+  .levelMap::-webkit-scrollbar{
+    display:none;
+  }
+
+  .actDivider{
+    width:100%!important;
+    min-width:0!important;
+    margin:18px 0 8px!important;
+    padding-left:48px!important;
+    writing-mode:horizontal-tb!important;
+    transform:none!important;
+    border:0!important;
+    flex:none!important;
+    justify-content:flex-start!important;
+    text-align:left!important;
+  }
+  .actDivider::before{
+    display:none!important;
+  }
+  .actDivider::after{
+    display:block!important;
+  }
+
+  .levelNode{
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:86px!important;
+    margin:0!important;
+    padding:12px 12px 12px 4px!important;
+    display:grid!important;
+    grid-template-columns:54px minmax(0,1fr) auto!important;
+    grid-template-rows:auto auto auto!important;
+    align-items:center!important;
+    gap:2px 10px!important;
+    flex:none!important;
+    scroll-snap-align:none!important;
+    text-align:left!important;
+    overflow:visible!important;
+  }
+  .levelNode:hover:not(:disabled){
+    transform:none!important;
+  }
+  .levelNode .levelNumber{
+    position:relative!important;
+    grid-column:1!important;
+    grid-row:1 / 4!important;
+    width:44px!important;
+    height:44px!important;
+    margin:0!important;
+    font-size:1rem!important;
+  }
+  .levelNode h3{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-width:0!important;
+    min-height:0!important;
+    margin:0!important;
+    font-size:.95rem!important;
+    line-height:1.2!important;
+    text-align:left!important;
+  }
+  .levelNode p{
+    grid-column:2 / 4!important;
+    grid-row:2!important;
+    min-width:0!important;
+    margin:3px 0 0!important;
+    font-size:.7rem!important;
+    line-height:1.35!important;
+    text-align:left!important;
+    display:block!important;
+    overflow:visible!important;
+    -webkit-line-clamp:unset!important;
+  }
+  .levelNode .nodeMeta{
+    grid-column:2 / 4!important;
+    grid-row:3!important;
+    min-width:0!important;
+    margin:4px 0 0!important;
+    padding:0!important;
+    font-size:.6rem!important;
+    text-align:left!important;
+  }
+  .levelNode .nodeStars{
+    position:static!important;
+    grid-column:3!important;
+    grid-row:1!important;
+    align-self:start!important;
+    justify-self:end!important;
+    transform:none!important;
+    white-space:nowrap!important;
+    font-size:.67rem!important;
+  }
+
+  .gardenJournal .journalStat strong{
+    color:#1f3d31!important;
+    -webkit-text-fill-color:#1f3d31!important;
+    font-size:1.5rem!important;
+    line-height:1!important;
+    opacity:1!important;
+  }
+}
