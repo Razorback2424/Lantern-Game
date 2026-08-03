@@ -136,11 +136,30 @@
           <span data-phase="reflection"><b>3</b> What Pip learned</span>
         </nav>
 
+        <!-- Presentation-only play shell. Existing controls are moved here at startup so their
+             IDs, listeners, state, and gameplay behavior remain unchanged. -->
+        <div id="newPlayShell" class="newPlayShell" aria-label="Lesson play area">
+          <section id="stage" class="stage" aria-label="The garden scene">
+            <div class="stageMeta"><span id="stageLabel"></span><span id="stageCounter"></span></div>
+            <div id="stageWorldMount"></div>
+          </section>
+          <nav id="travelerRail" class="travelerRail" aria-label="Situations you can show Pip"></nav>
+          <section id="decisionColumn" class="decisionColumn" aria-label="Choose what Pip should do">
+            <div id="decisionPromptMount"></div>
+            <div id="decisionActionsMount"></div>
+            <div id="beliefLine" class="beliefLine" role="status"><span class="beliefPip" aria-hidden="true"></span><span id="beliefCopy"></span></div>
+          </section>
+          <footer class="playShellFooter">
+            <div id="lanternMeter" class="lanternMeter" aria-label="Chapter progress"></div>
+            <div class="playShellFooterActions"><button id="openNotebookButton" class="notebookOpenButton" type="button" aria-haspopup="dialog" aria-controls="notebookCard">Open Pip's notebook</button><div id="challengeButtonMount"></div></div>
+          </footer>
+        </div>
+
         <div class="playColumns">
           <section class="teachingCard card">
             <div class="sectionHeading">
               <div><div class="kicker">TEACH THE MISSING PROMISE</div><h2>Teach Pip with examples</h2></div>
-              <div class="teachingHeaderActions"><button id="clearLessonsButton" class="textButton" disabled>Clear</button><button id="hintButton" class="textButton">Ask Pip</button></div>
+              <div class="teachingHeaderActions" aria-hidden="true"></div>
             </div>
             <p class="sectionLead">Pick a situation, then show Pip the right action. Use different examples until every part of the Promise is covered.</p>
             <div id="teachingStepPrompt" class="teachingStepPrompt" role="status" aria-live="polite"></div>
@@ -152,13 +171,20 @@
             <div id="recommendedReason" class="recommendedReason hidden"></div>
             <div class="lessonTrailLabel">Examples shown</div>
             <div id="lessonTrail" class="lessonTrail"></div>
-            <div class="teachingFooter">
-              <button id="undoLessonButton" class="button button--quiet" disabled>Undo last example</button>
-              <button id="beginChallengeButton" class="button button--primary" disabled>Let Pip try alone</button>
-            </div>
+            <div class="teachingFooter"><button id="beginChallengeButton" class="button button--primary" disabled>Let Pip try alone</button></div>
           </section>
 
           <aside id="notebookCard" class="notebookCard card">
+            <div id="notebookBackdrop" class="notebookBackdrop" tabindex="-1"></div>
+            <div class="notebookSpread" role="dialog" aria-modal="true" aria-label="Pip's notebook" aria-hidden="true">
+              <section class="notebookPage notebookPage--left">
+                <span class="notebookEyebrow">THE PROMISE I'M TRYING TO REMEMBER</span>
+                <h2 id="notebookGoal"></h2>
+                <span class="notebookEyebrow">WHAT YOU'VE SHOWN ME</span>
+                <div id="notebookEvidence"></div>
+                <div id="notebookSummaryStrip" class="notebookSummaryStrip"></div>
+              </section>
+              <section class="notebookPage notebookPage--right">
             <div class="notebookTitleRow">
               <div><div class="kicker">PIP'S NOTEBOOK</div><h2 id="notebookHeading">No examples yet</h2></div>
               <button id="toggleNotebookButton" class="notebookToggle textButton" aria-expanded="true" aria-controls="notebookBody">Hide</button>
@@ -183,6 +209,9 @@
                 <div><span>Average confidence</span><strong id="averageCertainty">—</strong></div>
               </div>
               <button id="focusSuggestedButton" class="button button--quiet hidden">Show a helpful example</button>
+            </div>
+              <div class="notebookTools"><button id="undoLessonButton" class="button button--quiet" disabled>Undo last example</button><button id="clearLessonsButton" class="button button--quiet" disabled>Clear examples</button><button id="hintButton" class="button button--quiet">Ask Pip</button><button id="closeNotebookButton" class="button button--primary">Close notebook</button></div>
+              </section>
             </div>
           </aside>
         </div>

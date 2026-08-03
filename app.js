@@ -198,6 +198,84 @@ Every resident raises one lantern. The festival begins.`
     }
   });
   const $=selector=>document.querySelector(selector);
+  let notebookReturnFocus=null;
+
+  function mountNewPlayShell(){
+    const shell=$("#newPlayShell");
+    if(!shell || shell.dataset.mounted)return;
+    document.body.classList.add("newPlayShell");
+    $("#stageWorldMount").appendChild($(".worldCard"));
+    $("#travelerRail").appendChild($("#lessonGrid"));
+    $("#decisionPromptMount").appendChild($("#teachingStepPrompt"));
+    $("#decisionActionsMount").appendChild($("#teachPanel"));
+    $("#challengeButtonMount").appendChild($("#beginChallengeButton"));
+    shell.appendChild($("#notebookCard"));
+    shell.after($("#challengeCard"),$("#reflectionCard"));
+    $("#openNotebookButton").onclick=()=>openNotebook();
+    $("#closeNotebookButton").onclick=()=>closeNotebook();
+    $("#notebookBackdrop").onclick=()=>closeNotebook();
+    shell.dataset.mounted="true";
+  }
+
+  function notebookIsOpen(){return $("#notebookCard")?.classList.contains("open");}
+  function openNotebook(){
+    if(!play.level)return;
+    notebookReturnFocus=document.activeElement;
+    const card=$("#notebookCard");
+    card.classList.add("open");
+    card.querySelector(".notebookSpread").setAttribute("aria-hidden","false");
+    requestAnimationFrame(()=>card.querySelector("#closeNotebookButton")?.focus());
+  }
+  function closeNotebook(){
+    const card=$("#notebookCard");
+    if(!card)return;
+    card.classList.remove("open");
+    card.querySelector(".notebookSpread").setAttribute("aria-hidden","true");
+    notebookReturnFocus?.focus?.({preventScroll:true});
+  }
+
+  function updateStageShell(){
+    if(!play.level)return;
+    const level=play.level;
+    $("#stageLabel").textContent=`Act ${["I","II","III"][Math.max(0,level.act-1)]} · Promise ${level.number} · ${level.title}`;
+    $("#stageCounter").textContent=`Example ${Math.min(play.lessons.length+1,level.budget)} of ${level.budget}`;
+    $("#lanternMeter").innerHTML=LEVELS.map((item,index)=>`<span class="${item.id===level.id?"current":""} ${progress.completed[item.id]?"done":""}" title="${escapeHtml(item.title)}"></span>`).join("");
+  }
+
+  function updateBeliefLine(){
+    if(!play.level)return;
+    const rules=E.consistentRules(play.level,play.lessons);
+    let copy="Pip has narrowed it down to a few possible Promises — he still isn't sure whether fear changes anything.";
+    if(play.lessons.length&&rules.length===0)copy="That surprised Pip. He's reopened a Promise he had already crossed out.";
+    else if(play.lessons.length&&rules.length<=3)copy="Pip crossed out two more Promises. He's close to one clear rule now.";
+    $("#beliefCopy").textContent=copy;
+  }
+
+  function renderNotebookSpread(){
+    if(!play.level)return;
+    const level=play.level;
+    const rules=E.consistentRules(level,play.lessons);
+    const proof=E.proofStatus(level,play.lessons);
+    $("#notebookGoal").textContent=level.goal;
+    $("#notebookEvidence").innerHTML=play.lessons.length?play.lessons.map(lesson=>{
+      const action=level.actions.find(item=>item.id===lesson.action);
+      const verdict=action?.id===level.actions[0]?.id?"crossed":"waited";
+      return `<div class="notebookEvidenceRow"><div class="portraitMini portraitMini--${escapeHtml(lesson.caseData.species||"creature")}">${portraitMarkup(lesson.caseData)}</div><div><strong>${escapeHtml(lesson.caseData.name)}</strong><small>${escapeHtml(lesson.caseData.summary)}</small></div><em>${escapeHtml(verdict)}</em></div>`;
+    }).join(""):`<p class="notebookWaiting">Show Pip an example and it will appear here.</p>`;
+    const missing=proof.items.find(item=>!item.satisfied);
+    $("#notebookSummaryStrip").textContent=missing?`Still missing: ${missing.label.toLowerCase()}.`:"Every part of the Promise has an example.";
+    const rejected=level.rules.filter(rule=>!rules.some(item=>item.id===rule.id));
+    const rejectedMarkup=rejected.map(rule=>{
+      const killer=play.lessons.find(lesson=>E.predict(rule,lesson.caseData)!==lesson.action);
+      const action=killer?actionLabel(level,killer.action):"your choice";
+      return `<div class="rejectedRule"><span>${escapeHtml(rule.name)}</span><small>${killer?`${escapeHtml(killer.caseData.name)} led you to “${escapeHtml(action)}.”`:"This Promise no longer fits the examples."}</small></div>`;
+    }).join("");
+    const possible=rules.map(rule=>`<span class="possibleRule">${escapeHtml(rule.name)}</span>`).join("")||"<span class=\"possibleRule\">No Promise fits these examples yet.</span>";
+    const right=$(".notebookPage--right");
+    let inference=right.querySelector(".notebookInference");
+    if(!inference){inference=document.createElement("div");inference.className="notebookInference";right.insertBefore(inference,right.querySelector(".notebookTitleRow"));}
+    inference.innerHTML=`<span class="notebookEyebrow">PROMISES I'VE HAD TO CROSS OUT</span>${rejectedMarkup||"<p class=\"notebookWaiting\">No Promise has been crossed out yet.</p>"}<span class="notebookEyebrow">STILL POSSIBLE</span>${possible}`;
+  }
   const storageState={available:true,error:null};
 
   function markStorageUnavailable(error){
@@ -631,6 +709,7 @@ Teach Pip well. Then Pip must restore each Promise without your help.`,
       if(isActive)step.setAttribute("aria-current","step");else step.removeAttribute("aria-current");
     });
     document.body.dataset.gamePhase=phase;
+    if(phase===PHASES.REFLECTION)requestAnimationFrame(()=>openNotebook());
   }
 
   function startLevel(index,options={}){
@@ -680,6 +759,7 @@ ${story?.stakes||level.goal}
   }
 
   function renderPlayLevel(){
+    mountNewPlayShell();
     const level=play.level;
     setPhase(PHASES.TEACHING);
     $("#actLabel").textContent=level.act===1?"ACT I · THE MISSING PROMISES":level.act===2?"ACT II · THE RULE THAT FAILED":"ACT III · THE LAST PROMISE";
@@ -784,15 +864,14 @@ ${story?.stakes||level.goal}
       const isGuided=!used&&!selected&&guided?.id===caseData.id;
       const card=document.createElement("button");
       card.type="button";
-      card.className=`lessonCard ${used?"used":""} ${selected?"selected":""} ${play.recommendedId===caseData.id?"recommended":""} ${isGuided?"guidedChoice":""} ${prediction?"hasPrediction":""}`;
+      card.className=`lessonCard travelerNode ${used?"used":""} ${selected?"selected":""} ${play.recommendedId===caseData.id?"recommended":""} ${isGuided?"guidedChoice":""} ${prediction?"hasPrediction":""}`;
       card.disabled=play.phase!==PHASES.TEACHING||play.running||play.solved||used||play.lessons.length>=level.budget;
-      card.setAttribute("aria-label",`${used?"Already shown":"Pick"} ${caseData.name}. ${caseData.summary}`);
+      card.setAttribute("aria-label",`${caseData.name}, ${used?"shown":selected?"teaching":"available"}. ${caseData.summary}`);
+      card.setAttribute("aria-pressed",String(selected));
       card.innerHTML=`
         <div class="portraitMini portraitMini--${escapeHtml(caseData.species||"creature")}">${portraitMarkup(caseData)}</div>
-        <span class="infoMark">${used?"✓":"i"}</span>
-        <span class="pickLabel">${used?"Shown":selected?"Selected":isGuided?"Try this":"Pick"}</span>
         <strong>${escapeHtml(caseData.name)}</strong>
-        <span class="caseSummary">${escapeHtml(caseData.summary)}</span>${prediction}`;
+        <span class="pickLabel">${used?"Shown":selected?"Teaching":"Available"}</span>${prediction}`;
       card.onclick=()=>selectTeachingCase(caseData.id);
       grid.appendChild(card);
     }
@@ -831,7 +910,7 @@ ${story?.stakes||level.goal}
       const rules=E.consistentRules(level,play.lessons);
       const ready=proof.complete&&rules.length;
       panel.innerHTML=ready
-        ?`<span class="emptyStepNumber">4</span><div><strong>You showed every part of the Promise</strong><small>Let Pip try alone when you are ready.</small></div>`
+        ?`<span class="emptyStepNumber">✦</span><div><strong>You showed every part of the Promise</strong><small>Let Pip try alone when you are ready.</small></div>`
         :play.lessons.length>=level.budget
           ?`<span class="emptyStepNumber">!</span><div><strong>You used all ${level.budget} examples</strong><small>Let Pip try alone, or undo one example to make a change.</small></div>`
           :`<span class="emptyStepNumber">${play.lessons.length?3:1}</span><div><strong>${play.lessons.length?"Pick another situation":"Pick a situation above"}</strong><small>${play.lessons.length?"Try to show a different part of the rule.":"The action choices will appear here."}</small></div>`;
@@ -853,7 +932,7 @@ ${story?.stakes||level.goal}
         <div class="portraitMini portraitMini--${escapeHtml(caseData.species||"creature")}">${portraitMarkup(caseData)}</div>
         <div><span class="selectedCaseEyebrow">SELECTED SITUATION</span><strong>${escapeHtml(caseData.name)}</strong><small>${escapeHtml(caseData.summary)}</small></div>
       </div>
-      <div class="actionQuestion"><strong>What should Pip do?</strong><small>Use the garden rule at the top of the screen.</small></div>
+      <div class="actionQuestion"><strong>The ${escapeHtml(caseData.name)} ${escapeHtml(caseData.summary)} What should the garden do?</strong></div>
       ${currentPrediction}
       <div class="actionChoices ${level.actions.length===2?"two":"three"}">${choices}</div>`;
     panel.querySelectorAll(".actionButton").forEach(button=>{
@@ -989,6 +1068,9 @@ ${story?.stakes||level.goal}
     const meter=$("#notebookMeter");
     const active=Math.round(certainty*5);
     meter.innerHTML=Array.from({length:5},(_,index)=>`<span class="${index<active?"on":""}"></span>`).join("");
+    updateStageShell();
+    updateBeliefLine();
+    renderNotebookSpread();
 
     if(!play.lessons.length){
       $("#notebookHeading").textContent="No examples yet";
@@ -1152,9 +1234,9 @@ ${story?.stakes||level.goal}
         const expected=E.predict(target,caseData);
         const correct=predicted===expected;
         const confidence=Math.round(snapshot.agreement*100);
-        $("#challengeConfidence").textContent=snapshot.unanimous?`${confidence}% certain`:`${confidence}% agreement`;
+        $("#challengeConfidence").textContent=snapshot.unanimous?"Pip is sure of this Promise":"Pip is weighing the Promise";
         $("#challengeConfidence").className=`challengeConfidence ${snapshot.unanimous?"high":confidence<70?"low":""}`;
-        setPipMood(snapshot.unanimous?"confident":"thinking",snapshot.unanimous?"I'm sure.":"I have a guess…",`${confidence}% of Pip's possible rules choose “${actionLabel(level,predicted)}.”`);
+        setPipMood(snapshot.unanimous?"confident":"thinking",snapshot.unanimous?"I'm sure.":"I have a guess…",`Pip chooses “${actionLabel(level,predicted)}.”`);
         await sceneWait(220);
         await runScene(caseData,predicted,correct,false);
         play.challengeResults.push({caseData,predicted,expected,correct,confidence,unanimous:snapshot.unanimous});
@@ -1214,7 +1296,7 @@ ${story?.stakes||level.goal}
     const card=$("#challengeStrip").children[index];
     card.classList.remove("active");
     card.classList.add(result.correct?"correct":"wrong");
-    card.querySelector("small").textContent=`${actionLabel(play.level,result.predicted)} · ${result.confidence}% sure · ${result.correct?"right":"misunderstood"}`;
+    card.querySelector("small").textContent=`${actionLabel(play.level,result.predicted)} · ${result.correct?"right":"misunderstood"}`;
     card.querySelector(".resultMark").textContent=result.correct?"✓":"×";
   }
 
@@ -1265,7 +1347,7 @@ ${story?.stakes||level.goal}
       const separating=E.findSeparatingCase(level,play.lessons,play.learnedRule);
       const predicted=actionLabel(level,first.predicted),expected=actionLabel(level,first.expected);
       panel.className="misunderstandingPanel failure";
-      let copy=`${first.caseData.name} showed the problem: Pip chose “${predicted},” but the correct rule needed “${expected}.” Pip was ${first.confidence??0}% confident on that action. `;
+      let copy=`${first.caseData.name} showed the problem: Pip chose “${predicted},” but the correct rule needed “${expected}.” `;
       if(hasHabit(9)&&separating) copy+=`${separating.name} is an example where Pip's guess and the correct rule choose different actions.`;
       else copy+="Add an example where Pip's guess and the correct rule choose different actions.";
       panel.textContent=copy;
@@ -1898,19 +1980,22 @@ The Last Promise is understood, but every earlier Promise must also be restored 
     if(["input","select","textarea"].includes(tag))return;
     const settingsOpen=!$("#settingsDrawer").classList.contains("hidden");
     const storyOpen=!$("#storyModal").classList.contains("hidden");
+    const notebookOpen=notebookIsOpen();
     if(settingsOpen&&trapFocus(event,$("#settingsDrawer .drawerPanel")))return;
     if(storyOpen&&trapFocus(event,$("#storyModal .modalCard")))return;
+    if(notebookOpen&&trapFocus(event,$("#notebookCard .notebookSpread")))return;
     if(event.key==="Escape"){
       if(settingsOpen){event.preventDefault();closeSettings();return;}
       if(storyOpen){event.preventDefault();closeStory();return;}
+      if(notebookOpen){event.preventDefault();closeNotebook();return;}
       if(currentScreen==="play"&&!play.running&&confirmLeaveActiveLesson()){event.preventDefault();renderMap();}
       return;
     }
-    if(settingsOpen||storyOpen||currentScreen!=="play"||play.running)return;
+    if(settingsOpen||storyOpen||notebookOpen||currentScreen!=="play"||play.running)return;
     if(event.key.toLowerCase()==="h"){event.preventDefault();askPip();}
     if(event.key.toLowerCase()==="u"){event.preventDefault();undoLesson();}
     if(event.key.toLowerCase()==="p"){event.preventDefault();togglePredictions();}
-    if(event.key.toLowerCase()==="n"){event.preventDefault();toggleNotebook();}
+    if(event.key.toLowerCase()==="n"){event.preventDefault();openNotebook();}
     if(event.key==="Enter"&&!$("#beginChallengeButton").disabled){event.preventDefault();beginChallenge();}
   });
 
