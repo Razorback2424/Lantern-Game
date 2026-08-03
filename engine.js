@@ -1,10 +1,15 @@
 (function(){
   "use strict";
-  var style=document.createElement("link");
-  style.rel="stylesheet";
-  style.href="intro-rewrite.css";
-  style.dataset.introRewrite="true";
-  document.head.appendChild(style);
+  function loadStyle(href,dataKey){
+    var style=document.createElement("link");
+    style.rel="stylesheet";
+    style.href=href;
+    style.dataset[dataKey]="true";
+    document.head.appendChild(style);
+  }
+  loadStyle("intro-rewrite.css","introRewrite");
+  loadStyle("play-instructions.css","playInstructions");
   document.write('<script src="engine-core.js"><\/script>');
   document.write('<script src="intro-rewrite.js"><\/script>');
+  document.write('<script src="play-instructions.js"><\/script>');
 })();
