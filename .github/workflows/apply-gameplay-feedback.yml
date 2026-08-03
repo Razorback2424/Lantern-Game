@@ -1,0 +1,57 @@
+name: Apply gameplay feedback patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-gameplay-feedback.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply verified feedback layer
+        env:
+          ENGINE_PATCH_B64: H4sIAGH7b2oC/60bXXPbuPE9v4JmMwp5pmkrTnJ3cmiP4zofHcfO2G5nOo4b0yIksaFIlYDsuJZe7wfcc5/7F/ren3K/pLsLgARIys7N9MURgd3FfmGxu0CebP7gvIunbJbFd86IseQ6Hn514IOVA2caf2XcESweTtJ87AwnRTpkPHCGxXSaiinLReDEeeLMymJcMs7TIncyNk6vM/bEcZzbVEyKuQC8OB8jATFhzjCezuJ0nDvlPAPiRUmj8Wz2jDvsW8oFAnIRCwbL47osdH7YfOKN5vlQwAKefw+03TlnAFWmQ+HuPIGBYZFz4Xw8PHi/f/zh4MvR/pvDo7Po5PrvbCjCUcnYP5mHiI7TH7hnsEbGECdJkaYb0MzzgXsILLPS2QS+1OD2wD2/LZybOEtB0FhMuJp4ARMTkHpSZIkaegmk2T/mLB8yNfJq4H5k06K8U98/DtxPZVqUqdAjPw3cgyIX7JtQAz8DSixI42qkv4VY7CYt5hz0xzXxft9gwVkH9Q3ZzJCnDwKdlAkrGZqIVk0Zd2Fu6RtKI2VHUjkZu2HZh2SQz7MsUCOcF/lBMc/FYKMvx0qGamUAxm6dMyY8X47PGCg0H5+umC7ZKGNkxDNwgFjMSzZwFa98OGEJeEQyGMUZR/dZGiw+jThD1KKMdpNiOEfXC0HR5d2ZGvc0AEhWYZloF2EYdqPuZ1mNfVmjMz6MZ+y9mGYRWH/Oot0zcLh87NGXH5a4aYbM27zovd595l5ujgPwdFjKu3d77sDtgafvuIH7Gn9nAn/u4s8x/XyGP/+w/TP8fuY+g9//mBcwsfQvkMilNJB2emc4L0tg/AjNI3eA5pIsxqPbNE+K2/D03Zejw7+A6y8WFySKBhOpyFj01HP/QAjn+On6eyE6HvlfLhYL1zVRwC/GEoV+HcXXLHsEZYqOG9FaIf32Nv/2mf/gfU7W/c/hpr9YECk996kspilnn/k6QWym/o5yFPCNXFLbkwKGIxDQo9/RLv0T5vPpNSujKDqmHx6BX/QvfVgG/ZecGAkuLVXO4pKzI+nVk3TmwU6bBUTR0qsUhWabEvsh+MHU82sRk/XPIcoZ/rDnw7+//fIrfa37TzeVSOnIWyNwXwmnmdPr4b4+hkAcaTHUIiZMTBIYUM+7oJDSH2MRR1JdIcXvAxjk6BS+1GQq2DTaxb9hjvSiSDPQsaKmJL/aZAgBZERqEIxKQb4CNGuGFwuazVZNpIk1ShRtb9Bi9XoSbO9ejwRyYCD/AVLLFaavdhEan3um0dE+8lstp7eP+nwqtw4inpdxmjlhVrmQi54gHSnafcC9UGeZAE99UxQZi3O/zeFNyvH0PMWzUfIXyHW45ZzxHE5WCOuRjrDKQHSmSvMgR/gZ7eJfUIpvq1MHDJh8F8MhkR/iGc1CXABOYVBTFxNaAklZsxFOYu5Zy9hSxXmc3f2TnatE4hOcog8Idxit4M3iX2GSnJ78CACNffOj3XvlkJLeNRsBk5FG4BkkMd6WAt6xQOMRCNcNud5vwEqypKSow2xyuov+ShSa7VwFAmUxig7DGf57Buf1/PFlVuOsXucsFikfpYZjGeuHuFG59gAjgHCNJb3OmKm9Tq8zjsGQSVRz+DjVXm+twR35W2sB5Rja+Dp1CapvSUWmMob1YCfnYzGp4Yg5CVYbrAXFsnSaQhYDKQvkaxMQ/Rv4SpvuRouGXxOR6qi/QUmijJNUBbQmJsTILQW7lGIvO7abTs8eiyKzgpMPVsZ+IPo8Gk9WRyIrZKzpRe2YsYq8Ldh8loC+P+QjSGkhx0anZg/Ip/UQPaSQ6nimNDhUCfBaFEk5gBHtUBZANb3TmK2y5SqMSNPZcC3W7OlGIh0O4bgoPb9Jo5VORzod02ZRTqJltFnabfHckLXBRuUnmEtrxi+rrZuAdW3p5D4FUyrOl5DIsTYfr38nH7Y6pHDfp/4HlN/laW9gj7PREWxR22kCrAMtVxsWsztKla8J5QA+XSPzw2nftIjCkvlI9MC+21FFGGTwkITuGLmKKV2lLwSKrj6lMyflzi1Lx1S4P703NqVCWVbb31FpOA+dQzigoYyEwgWGIZObQ11ZQv16w6hKL3JsB0xi4eSFkxX5GErlUSrCq4Z515RgndxBycoATK3CURUjOGhF6CDbwzjPC+FAEJ3icpo3BywKSVecV9yBfNRXgNq2KBWTSeganNhZQAb25CJCy13gHx2d+5d6xwDjNt8Qbft+fZwQ95JMWAf/atpx9q5A0c35pdMxiJT3XCWbO9C/uLt0hiWYBYWag0ZOQAPk7JUeQFA4Mnh4ZawLVf5KOOd8kvJKaajrtJwC+VRU7Zk8LsviVvdn4HwFo4/mJTZCwiqc1Fu3KUtTQ/93JTy9t82ydOISmz9pllU+rF2wzag8YZueqHm1tFNAnIFFYzrLII8XTjEinSjOulhpbSLFmLEtGu7YuXRtGNgEz7iODLB6mn9F01yDoWrV4f6LMerCV3qDO7fN2YMM2ccChiezyIXTD7/85nikY1BXsDwuBLsuiq/7skjsPJepisoV4OFNmuAx7oTNkdPiFmoqiAEYjzwPvHNFai+p61B/QUCXjVxYVrASpNd7pJKta1GJoAAbSaysYlUZalS8i4UeIwgb6YaVmNdFIE2jdeWyqesbUUhB9npEpddT3w0L0aTh0B1QkcWGAULNIFUur4DhTOwLUabgeMxz4zKNNwjSDa6khQfgcyaJ5ZXfcK+ODI7D0Zwc5jHsmET3sUR5Z1u1jG+jrBjG2RloB9tFYyY+gGE8Fw+wjTGVhMANFxsz6eQbN323WQesAZnF4k9nJ8ch1eQefPt7KBe2mDn8Ql5AkdRwVOfGkDo6XxhExNK/V5REOWc7y3ZVO0/SQvVu7Z6cGtR17L4BuFiowVt2/TUV5lR9uKuBdqtI4X75Ulal8VvVsydK0WMAiwXGtorpro7AStyOVloW353DKe2NStn2vguSeRnThgu3fgrE3QxSUg4B2A1uimw+ZTC8/TJIGCBGW0brxfaLrlRJqdRWuplhmSprtDFLEan5UEXJ83TK1okNE7TgQwiVMfaLK/iSQWw7qSbsVhseLg3QdzCkgWp6IakC/7RmKt2FsstcfUtIXIIOMfTcvyDEPnHvhVtbW/2ApPOboOzbDMwCKVOcncIBc16YiNISEnM93Oo//33oxrrr2tpteUEpOUQ3D+n5O0RVD2l9JQwve1bgE31PSWeNFzPPXhxk2Pa7nfNgzjxUeu1pZIcocmfxjJVuFT4rT37+aisIt16+DFyIfTFeE7nw3f+pii4V5PbPCPljoPwbgF4E6N3NWkevyFmcdSy4vQ1k+n17vYqKAfji55cAuF2vt/0c128DvkIR+q9qwOeI+GIlX8MSg14Ha32S8AXogse3oijEZJUu+gDUobUXhG7UaY0AOptld6dGba7Djddux1/fUdsbo9dH2fFb2e+8oA4CdrUD1Uu49I06CpmG5NOI+piVhGaPwEg+ZFpgn0/UMKdMoXGO81mcN25I9qwGvaYAGYYUCI82L6+77jKYQclsxrEKix+z26i7JFaVtkGFoI38gBgewqnJj1LIi+Mk8VxQZ22B+gRtAcvyCtKADGJc0okB0QnDA2TsnmfkaZVIlFjxAxkDWFPAB9ZcyWO3SA+wuAxevdwyvpUn0PHerB7WGrQxaGFB1eLnEQ2vZMfMkUhFkhtrF2L4qvfnzu/riTSiobqifwt+au6u/3fypTqLmHAlEdDaayRgg/tlI09Tt3cSZS+MBSw2E5CfXegW26W/WGw9lKBtdWRnsig5qF4q/PlDV1SZCwG5imzcjNP8YBJnWD+xNzRhtnAkaEd+MYOtx6Lqavm6SO5CWBoGsficsk84v1i4+hmFW1ucMCEEV1PY6qZ1wiTllAz1emrATv7dMzhNzNq0Dt9t+A7oHRt4dbIvUWVRih6GBbLuMeDTD1IbkeZFVqA7uVZfTukIMGaC9KxlPRNs9omG8R1HAcIbW4HGe73NI4jX2BUCsptpiPW8mjPF8/32GIgM9J0Xzn//43QIb97zUrMQORvaxv+IEy64ntIROCgQPswYmtm41KV+pekWeMhwum+Rl+egl3M4JWjE9CgJY7U6AaVyJJlOqvX02bJjAWOl6tr0GwAUjejkXAFH7IcQ2Fgp3tDdhSdRA+XwbWPqHRq1Y4q5L8CDMYZFbS/f0xTW+/XVST/Qo34jewdmzqljcqY8DApPRXx51QEri1sdRq6gSlW/l9JH6wHZgUKfHWDiQq2nkg0LCHEJtiCx/cKr7s/VwD0utJsDcA16B1vdtS4SQPX2hq3l8NvzxmyLCkpT4+OXb06ZE+0cOEEOwYswZTJbMGQtGHTkdcZxkZg5j5fD98qOC77A8Lqem/iN/kvzSl2P4/64jpMxZHOwTjOHCnHwI8Pebjq02iJrhGSct5LI920YBW1uCGuhHfMKDsMCE/FD/InYpI3QcHThdZ0nubSPebtx1HildmE+Z7mEkwLyNnod5/AJVCmuoQIpQ1cfqDVj934Al4TRB9NUyV3hd86aNLq6OcK40P8Yl1/ns8fuScrillMPXt7bcwjSKxzt+16e1P06JBU+1LSDojaLZbm56oFBSDBprvuQSpqVTyUmBWc5DjeanYHBTMf9t+RVNqYvti5Vt7B+SyW3CBuNwOUMAxKWdUHsS5jIPSDXx9a1NV/R01ktkTBa9wr/6qDut0N4bEAt20OrW/dXzSWpAaDXOaEOO3YOcbgBXAlT9cLpvajqhMtGe5rJN4yNHPLqdZLeOLS3I5fVXWTLQ7GrvFtt2S6MD+iJ7u7Te/XiY/l6E6C6cUzKbyDnM0gDoExpgFL9iNAzPVQ/XaIy1V86v/3yq2MBP9pcxqd0LY8HhtXKJjMG17j1IHiV6ZC7u68xRO4q4xqPIzQ7NF4/hqgvO2AVxNT4BtvShsQHQdj6Q8VMIclq4NQbkwIYYRNYrXiTjvzQd45++PcizT3XtZuZV6ts9R7KMUxCFPd/PfnzqXN+uH/w/sPxO+fT/vn7SjipyPfgRcy8FtW3jjIn1hc0leIld0/vMdJJB++qS06ru/tHb5Yh4lAeWV/3H8CQdbsM34sF/u0sWCdpAt6NmWzz1rhdzJhBEhfVO+OwHnft/Kx6enClb5nx/R3+rt9nyVgNALJC1r4vAWlM+u/ySltz4fo490hVpQMIKMFgvNdb+T4CEyn9u0okTP9L85yV788/HkXfd7Y9/iKjWs9MpOsUCJUM0Y6Lo3Q8EW9wzKo6rZTn4YQH/K7OSWQ+gPVBk7oNYeRDqwBt5zubT6cxVnld+Y5ZJvD5cAiqivQrX+e2KL9yXcbZRFc9R7bfouqs3agZ2iWIQjGko+0givEYzummkBsbsqZ1A8Vur2cWB7+XGGwofOq/pohByFbEdvuWKESQiprOZZXi99zf/vVv5y0u4tAqWM3O4WiCgaKA0zpXN/YIUJXfCnlglkt1BQQUILDLRasTHIImUCxBDQMX/5+Bqu2xY+3EeFK7xk7rykEreTry0Gqu66HaCP/3gi5N5Caq/ieA2aI1iw/7LbyctwqdnSeryw/z3phHnQ+CJeB3vDWzukDgk9Hj71xN2g+/LjIhH75al5CPNdNNeh1dMXP64cOp41JXWezUNmf1pq6yqGWJprXrNixdgHGxn6dTispvS4hPnnKWjvXhRMxSEBR4rZ6OWf09mghFXI7h9BhmkLVzsRd67vX3dPnQ5WUHiOoMF1+JaIOoNmHVI5IQtEIDxK/6uermqZt4Zxey3RVsNvsaTeeUY88rrXtqsEGsk7QBrxq5LaS6B013V9Vht6rV3+JG9/A7GFrNkkZaxdUy+HFra2WjO83T6ja+WgGkPEQfOKKX7XBogY3AY9xAuU6AzqdI0hXTXJDnnVxzVt4AfMPF/bCQM54lRACR9VqUjA2QXgBBIEtwSf0Zl5DnsBKTHzkU66Yrb3y/pTeVgwuX1OIGrrY8/gT0DcyBNqi15l7qS4TWPqy2SquC1cEhujejaWDHw8B8lxh0BLfAelgbqB1KDX5w7Eo1dANCARRdPCtkAu4rptq2+ePJR3V4HAEsyoxGDe4LiMOkJykwFY2GLxIQOsbSR9H/B8QHDV7aOAAA
+          CSS_PATCH_B64: H4sIAGH7b2oC/51WTW/bOBC9+1dwWxSIC0kV9WVbAhbdLLDdQwMskj3slZZGNhuJFEg6jiv4v+9QUmLFVrrpHmIgJDWcefPe48w+fSRfWA1NxQ6kBCjWLL8nDdM6JQ9c83UFpAKmBBcbh+SyrrmpQRiHMFGQRsmNAq25FB75+GnmaVnJv9XhzjCz0+2MkIJrGzrlouIC3LKCx4xVfCNcbqDWaY6xQGU1F+4W+GZr0jBqHrOGFQXemC6aR0IpLqylKkC5ihV8p9PVaoVrGL5fTvEEwat5QdRmza6COHaCMHBosnQ8Gs0zW9RGyZ0o0tOB4c/zw3huY+WYuxrth0uHrqjjxbhdSmFczb9DSn28uft33+e79P2sAoNVuLphuc3aowHUmYFH4xrFhC6lqtNd04DKmYZsv8Xau8OQCrlXrJkdZ+/XsOHi9y2rKhAbuN4Zg6ByfQcIl9i0TPCaGQQ6RdBrrsFuEC8JNAEMikiYbdZIbuF04QFh1RhcwHG2lsXBG32E0Yi3hopD+RV70g7QnpdPqUP9heOFS8RPPrp6ywq5T33ikwBbRC5P0mB+nH2+h0OpkFGajO5s/Q/tCQqdswqu6PwYxpfL3mpxcaFPFpM3+sv5cTEV2vOD+DLtZDJIiGlTfzrB42zmKfgGuYHidodawK6JtpGad61QUGFPHiA7o/m6kvl9tueF2aYlN4gttkWYnhIF5FL1rbQN+oXXjVSGCXOcuCtNWYkdbYcI6bt32fPtbI2c3xlA+pUmdQMkpuoo6VoJGdmkcfAhG2QVvCKic2ksAyehToi6SLDxZ5D8g5ic1lyJ13GR2utJL+SzEjwB++pwO6y8KOjEZ+suUNwZxe+BeNFSk3y35rm7hu8c1JUXOB7KGNU870j+gmLjb9sS+dZeZOzPM2l1aQ6pFxyNbKdqejpBu44LWcAN5FvMMW9fdzANVflsYEwhFG4H+si/rFCWb0S+N53YoYuoY3b2I3MbjtFwnl34lu9Q62uL5di3vDhRaEpj51pNOJe/+jnnsnAZYPkWv/6Lme2fwGzhz6h1cNkft+AKWWAbjgnvapFtWJOGiMMAHfbWyDqlSNTjZMxee6OKkuAtFdElHuoxer9YJ6uoeC28URIz7+KVrObVIX1g6sp1h1pcu/PiKfC6BIbYwSrKw/PYt3Lfjp+7DgltmDJnB6/RpFv7Cvam4XeYIR0vT/065PmEcO81P0qi/6rGl+XsoxFp0V+fYiQsieNV1rF9MA/qRTEGbTDYDaDYcj3RYEuH1P50nU1OnbXxk66rowB9N6fE9X+0E0UOPtXJqhfOUEhYJlFUjjWQXGgAX2/Mq+RKm6924ZoVG2jfOLVcGnxfcZe6T+h4klnaSeZVE55UOla0CJ3olRnmtOvbCeWpeXEchy9qXrxJJfheQn2JhOv2DjsxJCSRQ+nKwffCC5aX6Y226akjNC6iED3jcw0FZ1c1exwIv/BxrprbidGzyN9toar+kBJz/K0zDd2ecezbThteHp6Q75UFArmPIV6OoT24Lu22xhyeVua0XR1xRutHKQXFLocbaTfJf4xtzsQnP/9Cno8J/wKJ0+VxtQsAAA==
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import base64, gzip, os
+
+          def decode(name):
+              return gzip.decompress(base64.b64decode(os.environ[name])).decode()
+
+          engine = Path("engine.js")
+          css = Path("qa-fixes.css")
+          engine_text = engine.read_text()
+          css_text = css.read_text()
+          engine_marker = "/* Gameplay feedback layer: makes teaching choices, commitment, and progression legible"
+          css_marker = "/* Gameplay feedback pass: visible learning, commitment, and progression. */"
+
+          if engine_marker not in engine_text:
+              engine.write_text(engine_text + decode("ENGINE_PATCH_B64"))
+          if css_marker not in css_text:
+              css.write_text(css_text + decode("CSS_PATCH_B64"))
+          PYCODE
+          node --check engine.js
+          grep -q "Seal the Promise" engine.js
+          grep -q "YOUR TEACHING PATH" engine.js
+      - name: Commit and push
+        run: |
+          if git diff --quiet -- engine.js qa-fixes.css; then
+            echo "Patch already present; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add engine.js qa-fixes.css
+          git commit -m "Improve gameplay feedback and commitment"
+          git pull --rebase origin main
+          git push origin HEAD:main
