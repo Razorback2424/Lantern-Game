@@ -9,8 +9,7 @@
   }
   loadStyle("intro-rewrite.css","introRewrite");
   loadStyle("play-instructions.css","playInstructions");
-  loadStyle("map-mobile.css","mapMobile");
-  loadStyle("play-mobile.css","playMobile");
+  loadStyle("layout-stability.css","layoutStability");
   document.write('<script src="engine-core.js"><\/script>');
   document.write('<script src="intro-rewrite.js"><\/script>');
   document.write('<script src="play-instructions.js"><\/script>');
