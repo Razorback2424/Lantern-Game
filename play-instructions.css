@@ -1,0 +1,64 @@
+/* One-question-at-a-time play instructions. Gameplay and authored content remain unchanged. */
+body.playInstructionsRewrite.newPlayShell .decisionColumn{
+  gap:18px;
+}
+body.playInstructionsRewrite.newPlayShell .decisionColumn .playInstructionPrompt{
+  min-height:88px;
+  margin:0;
+  padding:0;
+  border:0;
+  background:none!important;
+  box-shadow:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+body.playInstructionsRewrite.newPlayShell .decisionColumn .playInstructionPrompt>strong{
+  display:block;
+  max-width:760px;
+  font-family:var(--display-font);
+  font-size:38px;
+  font-weight:400;
+  line-height:1.16;
+  letter-spacing:-.02em;
+  color:var(--ink-cream);
+  text-wrap:balance;
+}
+body.playInstructionsRewrite.newPlayShell .decisionColumn .teachPanel--empty{
+  display:none!important;
+}
+body.playInstructionsRewrite.newPlayShell .decisionColumn .teachPanel:not(.teachPanel--empty) .actionQuestion{
+  display:none!important;
+}
+body.playInstructionsRewrite.newPlayShell .decisionColumn .teachPanel:not(.teachPanel--empty){
+  margin-top:-2px;
+}
+body.playInstructionsRewrite.newPlayShell .playInstructionPrompt.state-outcome>strong{
+  color:rgba(255,242,201,.92);
+  font-style:italic;
+}
+body.playInstructionsRewrite.newPlayShell .playInstructionPrompt.state-conflict>strong,
+body.playInstructionsRewrite.newPlayShell .playInstructionPrompt.state-full>strong{
+  color:#f0b9a9;
+}
+body.playInstructionsRewrite.newPlayShell .playInstructionPrompt.state-test>strong{
+  color:var(--ink-warm);
+}
+body.playInstructionsRewrite.newPlayShell .travelerRail .travelerNode:focus-visible,
+body.playInstructionsRewrite.newPlayShell .decisionColumn .actionButton:focus-visible{
+  outline:3px solid rgba(255,211,107,.72);
+  outline-offset:3px;
+}
+
+@media(max-width:1023px){
+  body.playInstructionsRewrite.newPlayShell .decisionColumn .playInstructionPrompt>strong{font-size:32px}
+}
+@media(max-width:767px){
+  body.playInstructionsRewrite.newPlayShell .decisionColumn .playInstructionPrompt{min-height:60px}
+  body.playInstructionsRewrite.newPlayShell .decisionColumn .playInstructionPrompt>strong{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.playInstructionsRewrite.newPlayShell .travelerRail .travelerNode{transition:none!important}
+}
+body.reduceMotion.playInstructionsRewrite.newPlayShell .travelerRail .travelerNode{transition:none!important}
