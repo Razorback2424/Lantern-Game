@@ -1,0 +1,196 @@
+/* results-mobile.css — dark-stage visual skin for Pip's solo try (#challengeCard)
+   and the results / reflection card (#reflectionCard) on phones.
+
+   Structural mobile fixes remain in layout-stability.css. This file adds only
+   color, background, border, shadow, and typography.
+
+   Load order: qa-fixes.css, layout-stability.css, then this file. */
+
+@media (max-width: 900px) {
+  body.newPlayShell .challengeCard.card,
+  body.newPlayShell .reflectionCard.card {
+    padding: 0;
+    background: #050f13;
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 26px;
+    box-shadow: 0 24px 48px rgba(0,8,12,.5);
+    color: #fff8e8;
+  }
+  body.newPlayShell .challengeCard .sectionHeading,
+  body.newPlayShell .reflectionCard .reflectionHeader { padding: 18px 18px 0; }
+  body.newPlayShell .challengeCard .kicker,
+  body.newPlayShell .reflectionCard .kicker { color: rgba(255,238,191,.5); }
+  body.newPlayShell .challengeCard h2,
+  body.newPlayShell .reflectionCard h2 { color: #fff2c9; }
+  body.newPlayShell .challengeCard .sectionLead,
+  body.newPlayShell .reflectionCard #reflectionSummary {
+    padding: 0 18px;
+    color: rgba(255,248,232,.7);
+    text-wrap: pretty;
+  }
+  body.newPlayShell .challengeStatus { padding: 0 18px; }
+  body.newPlayShell .challengePolicyChip,
+  body.newPlayShell .challengeConfidence {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,238,191,.72);
+  }
+  body.newPlayShell .challengeScore {
+    background: rgba(79,152,112,.16);
+    border: 1px solid rgba(127,199,155,.26);
+    color: #b7e8c9;
+  }
+  body.newPlayShell .challengeStrip { padding: 14px 18px 18px; }
+  body.newPlayShell .challengeCase {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+  }
+  body.newPlayShell .challengeCase .portraitMini { border: 1px solid rgba(255,255,255,.14); }
+  body.newPlayShell .challengeCase strong { color: #fff2c9; }
+  body.newPlayShell .challengeCase small,
+  body.newPlayShell .challengeCase span { color: rgba(255,248,232,.58); }
+  body.newPlayShell .challengeCase.active {
+    outline: 0;
+    border-color: rgba(255,211,107,.42);
+    box-shadow: 0 0 18px rgba(255,211,107,.14);
+  }
+  body.newPlayShell .challengeCase.correct {
+    background: rgba(79,152,112,.13);
+    border-color: rgba(127,199,155,.24);
+  }
+  body.newPlayShell .challengeCase.wrong {
+    background: rgba(186,92,74,.14);
+    border-color: rgba(224,138,116,.28);
+  }
+  body.newPlayShell .reflectionHeader {
+    background: radial-gradient(120% 90% at 50% 0%, rgba(239,198,106,.2), rgba(5,15,19,0) 72%);
+    padding-bottom: 12px;
+  }
+  body.newPlayShell #reflectionStars {
+    color: #efc66a;
+    filter: drop-shadow(0 3px 10px rgba(239,198,106,.32));
+  }
+  body.newPlayShell .firstLightBadge {
+    margin: 12px 18px 0;
+    border-color: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.045);
+    color: rgba(255,238,191,.72);
+  }
+  body.newPlayShell .firstLightBadge--earned {
+    border-color: rgba(127,199,155,.3);
+    background: rgba(79,152,112,.14);
+    color: #b7e8c9;
+  }
+  body.newPlayShell .ruleCompare { padding: 14px 18px 0; }
+  body.newPlayShell .ruleCompare article {
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: none;
+  }
+  body.newPlayShell .ruleCompare article:first-child {
+    background: rgba(79,152,112,.15);
+    border-color: rgba(127,199,155,.26);
+  }
+  body.newPlayShell .ruleCompare span { color: rgba(255,238,191,.55); }
+  body.newPlayShell .ruleCompare strong { color: #fff2c9; }
+  body.newPlayShell .ruleCompare small { color: rgba(255,248,232,.6); }
+  body.newPlayShell .ruleCompare.isMatched article:last-child {
+    background: none;
+    border: 0;
+    padding: 2px 4px;
+  }
+  body.newPlayShell .ruleCompare.isMatched article:last-child span,
+  body.newPlayShell .ruleCompare.isMatched article:last-child small { display: none; }
+  body.newPlayShell .ruleCompare.isMatched article:last-child strong {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: .78rem;
+    font-weight: 700;
+    color: rgba(255,248,232,.62);
+  }
+  body.newPlayShell .ruleCompare.isMatched article:last-child strong::before {
+    content: "✓";
+    color: #b7e8c9;
+  }
+  body.newPlayShell .evidenceExplanation { padding: 18px 18px 4px; }
+  body.newPlayShell .teachingPathHeading span { color: rgba(255,238,191,.5); }
+  body.newPlayShell .teachingPathHeading strong { color: #fff2c9; }
+  body.newPlayShell .evidenceRow {
+    background: transparent;
+    border: 0;
+    padding: 0 0 14px;
+  }
+  body.newPlayShell .evidenceIndex {
+    position: relative;
+    background: rgba(255,211,107,.14);
+    border: 1px solid rgba(255,211,107,.32);
+    color: #ffd36b;
+  }
+  body.newPlayShell .evidenceRow:not(:last-child) .evidenceIndex::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: calc(100% + 14px);
+    background: linear-gradient(180deg, rgba(255,211,107,.28), rgba(255,211,107,0));
+  }
+  body.newPlayShell .teachingPathBody > strong { color: #fff2c9; }
+  body.newPlayShell .teachingPathBody > small {
+    font-size: .75rem;
+    line-height: 1.45;
+    color: rgba(255,248,232,.56);
+  }
+  body.newPlayShell .pathMetrics span {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,238,191,.72);
+  }
+  body.newPlayShell .pathMetrics span:last-child {
+    background: rgba(79,152,112,.16);
+    border-color: rgba(127,199,155,.22);
+    color: #b7e8c9;
+  }
+  body.newPlayShell .misunderstandingPanel,
+  body.newPlayShell .recommendedLessonPanel {
+    margin: 0 18px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,248,232,.72);
+  }
+  body.newPlayShell .misunderstandingPanel.success {
+    background: rgba(79,152,112,.14);
+    border-color: rgba(127,199,155,.26);
+  }
+  body.newPlayShell .misunderstandingPanel.failure {
+    background: rgba(186,92,74,.14);
+    border-color: rgba(224,138,116,.28);
+  }
+  body.newPlayShell .misunderstandingPanel strong,
+  body.newPlayShell .recommendedLessonPanel strong { color: #fff2c9; }
+  body.newPlayShell .reflectionActions {
+    position: sticky;
+    bottom: 0;
+    gap: 9px;
+    padding: 12px 16px calc(18px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255,255,255,.06);
+    background: linear-gradient(180deg, rgba(5,15,19,.6), rgba(5,15,19,.96) 26%);
+    backdrop-filter: blur(6px);
+  }
+  body.newPlayShell .reflectionActions .button { border-radius: 999px; }
+  body.newPlayShell .reflectionActions #completeLevelButton {
+    min-height: 50px;
+    font-weight: 800;
+  }
+  body.newPlayShell .reflectionActions #replayExamButton,
+  body.newPlayShell .reflectionActions #reviseButton {
+    background: transparent;
+    border: 1px solid rgba(255,232,168,.2);
+    color: rgba(255,238,191,.68);
+  }
+}
