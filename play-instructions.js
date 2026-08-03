@@ -16,7 +16,14 @@
     "festival-gate":"What should Pip do first?"
   });
 
-  const state={scheduled:false,selectedId:null,outcomeText:""};
+  const state={
+    scheduled:false,
+    levelId:null,
+    selectedId:null,
+    lessonCount:0,
+    outcomeText:""
+  };
+
   const $=selector=>document.querySelector(selector);
   const $$=selector=>[...document.querySelectorAll(selector)];
 
@@ -58,23 +65,45 @@
     return `${caseData.name}: ${trimSentence(caseData.summary)}. ${ending}`;
   }
 
+  function sceneOutcome(){
+    if(document.body.dataset.gamePhase!=="teaching")return "";
+    const visitor=$("#visitor");
+    const caption=$("#sceneCaption")?.textContent?.trim();
+    if(!visitor?.classList.contains("react")||!caption)return "";
+    return caption;
+  }
+
   function teachingPrompt(level,lessons){
     const engine=window.RuleGardenEngine;
     const selected=selectedCase(level);
+
+    if(state.levelId!==level.id){
+      state.levelId=level.id;
+      state.selectedId=null;
+      state.lessonCount=lessons.length;
+      state.outcomeText="";
+    }
 
     if(selected){
       if(state.selectedId!==selected.id){
         state.selectedId=selected.id;
         state.outcomeText="";
       }
-      return {text:state.outcomeText||caseQuestion(level,selected),kind:state.outcomeText?"outcome":"act"};
+      return {text:caseQuestion(level,selected),kind:"act"};
     }
 
     state.selectedId=null;
-    state.outcomeText="";
+
+    if(state.outcomeText&&lessons.length>=state.lessonCount){
+      state.lessonCount=lessons.length;
+      return {text:state.outcomeText,kind:"outcome"};
+    }
+
+    if(lessons.length<state.lessonCount)state.outcomeText="";
+    state.lessonCount=lessons.length;
 
     const rules=engine?.consistentRules?engine.consistentRules(level,lessons):[];
-    const proof=engine?.proofStatus?engine.proofStatus(level,lessons):{complete:false,matchedCount:0,total:0};
+    const proof=engine?.proofStatus?engine.proofStatus(level,lessons):{complete:false};
 
     if(lessons.length&&rules.length===0){
       return {text:"These examples conflict. Which lesson should you undo or change?",kind:"conflict"};
@@ -91,16 +120,9 @@
     return {text:"Which traveler should Pip study first?",kind:"pick"};
   }
 
-  function sceneOutcome(){
-    if(document.body.dataset.gamePhase!=="teaching")return "";
-    const visitor=$("#visitor");
-    const caption=$("#sceneCaption")?.textContent?.trim();
-    if(!visitor?.classList.contains("react")||!caption)return "";
-    return caption;
-  }
-
   function setPrompt(prompt,text,kind){
-    const strong=prompt.querySelector("strong");
+    const desiredClass=`teachingStepPrompt playInstructionPrompt state-${kind}`;
+    const strong=prompt.querySelector(":scope > strong");
     if(!strong||prompt.childElementCount!==1){
       const replacement=document.createElement("strong");
       replacement.textContent=text;
@@ -108,19 +130,19 @@
     }else if(strong.textContent!==text){
       strong.textContent=text;
     }
-    prompt.className=`teachingStepPrompt playInstructionPrompt state-${kind}`;
-    prompt.dataset.instructionState=kind;
-    prompt.setAttribute("aria-live","polite");
-    prompt.setAttribute("aria-atomic","true");
+    if(prompt.className!==desiredClass)prompt.className=desiredClass;
+    if(prompt.dataset.instructionState!==kind)prompt.dataset.instructionState=kind;
+    if(prompt.getAttribute("aria-live")!=="polite")prompt.setAttribute("aria-live","polite");
+    if(prompt.getAttribute("aria-atomic")!=="true")prompt.setAttribute("aria-atomic","true");
   }
 
   function rewriteKeyboardGuide(){
     $$(".keyboardGuide span").forEach(item=>{
-      if(/\bN\b/i.test(item.textContent||"")&&/fold notebook/i.test(item.textContent||"")){
+      const text=item.textContent||"";
+      if(/fold notebook/i.test(text)){
         const key=item.querySelector("kbd")?.outerHTML||"<kbd>N</kbd>";
         item.innerHTML=`${key} notebook`;
-      }
-      if(/\bEnter\b/i.test(item.textContent||"")&&/let Pip try/i.test(item.textContent||"")){
+      }else if(/let Pip try when ready/i.test(text)){
         const key=item.querySelector("kbd")?.outerHTML||"<kbd>Enter</kbd>";
         item.innerHTML=`${key} seal the Promise`;
       }
@@ -151,12 +173,16 @@
       instruction={text:"What did your examples teach Pip?",kind:"reflection"};
     }else{
       const outcome=sceneOutcome();
-      if(outcome&&state.selectedId)state.outcomeText=outcome;
+      if(outcome){
+        state.outcomeText=outcome;
+        state.lessonCount=currentLessons(level).length+1;
+      }
       instruction=teachingPrompt(level,currentLessons(level));
     }
 
     document.body.classList.toggle("playInstructionOutcome",instruction.kind==="outcome");
-    $("#decisionColumn")?.setAttribute("aria-label",instruction.text);
+    const decision=$("#decisionColumn");
+    if(decision&&decision.getAttribute("aria-label")!==instruction.text)decision.setAttribute("aria-label",instruction.text);
     setPrompt(prompt,instruction.text,instruction.kind);
   }
 
@@ -167,6 +193,7 @@
   }
 
   function init(){
+    document.body.classList.add("playInstructionsRewrite");
     new MutationObserver(scheduleRefresh).observe(document.body,{
       subtree:true,
       childList:true,
