@@ -40,3 +40,41 @@ html{scroll-padding-top:24px}
   }
   .lessonRailHint span{font-size:1.05rem;color:#f0c65d}
 }
+
+/* Gameplay feedback pass: visible learning, commitment, and progression. */
+.soloTryStatus{
+  display:inline-flex;align-items:center;min-height:34px;padding:7px 11px;border-radius:999px;
+  border:1px solid rgba(255,232,168,.14);background:rgba(255,255,255,.035);
+  color:rgba(255,238,191,.55);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap
+}
+#beginChallengeButton.isSealing{animation:promiseSeal .62s ease both;pointer-events:none}
+body.promiseSealing .beliefLine{border-color:rgba(255,211,107,.38);box-shadow:0 0 24px rgba(255,211,107,.12)}
+@keyframes promiseSeal{0%{transform:scale(1)}35%{transform:scale(.97);box-shadow:0 0 0 7px rgba(255,211,107,.08)}70%{transform:scale(1.025);box-shadow:0 0 26px rgba(255,211,107,.32)}100%{transform:scale(1)}}
+
+.rejectedRule span{position:relative;display:inline-block;width:fit-content;text-decoration:none!important}
+.rejectedRule span::after{content:"";position:absolute;left:-2px;right:-4px;top:52%;height:2px;border-radius:999px;background:rgba(82,61,35,.68);transform:scaleX(1);transform-origin:left center}
+.rejectedRule.newlyRejected span::after{animation:earnedStrike .48s cubic-bezier(.2,.8,.2,1) both}
+@keyframes earnedStrike{from{transform:scaleX(0);opacity:.2}to{transform:scaleX(1);opacity:1}}
+
+.nodeMechanic{display:inline-flex;align-self:center;margin-top:5px;padding:4px 8px;border-radius:999px;background:rgba(255,235,174,.08);border:1px solid rgba(255,235,174,.13);color:rgba(255,230,155,.78);font-size:.56rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+
+.teachingPathHeading{display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.teachingPathHeading span{font-size:.62rem;font-weight:900;letter-spacing:.18em;color:#7b694d}
+.teachingPathHeading strong{font-family:var(--display-font);font-size:1.2rem;color:#294c3d}
+.teachingPathRow{align-items:flex-start}
+.teachingPathBody{min-width:0;flex:1}
+.teachingPathBody>strong{display:block;color:#294c3d}
+.teachingPathBody>small{display:block;margin-top:7px;color:#6a6559;line-height:1.45}
+.pathMetrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pathMetrics span{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(44,91,69,.08);color:#3f644f;font-size:.66rem;font-weight:800}
+.firstLightBadge{display:inline-flex;align-items:center;width:fit-content;margin:4px 0 14px;padding:8px 12px;border-radius:999px;border:1px solid rgba(91,73,48,.14);background:rgba(91,73,48,.055);color:#65553f;font-size:.72rem;font-weight:900;letter-spacing:.025em}
+.firstLightBadge--earned{border-color:rgba(64,119,82,.28);background:rgba(64,119,82,.1);color:#315d43}
+
+@media(max-width:700px){
+  .playShellFooterActions{flex-wrap:wrap;justify-content:flex-end}
+  .soloTryStatus{order:-1}
+  .pathMetrics{align-items:flex-start;flex-direction:column}
+}
+
+body.reduceMotion #beginChallengeButton.isSealing,
+body.reduceMotion .rejectedRule.newlyRejected span::after{animation:none!important}

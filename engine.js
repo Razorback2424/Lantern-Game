@@ -562,3 +562,371 @@
     validateCampaign
   };
 })();
+
+/* Gameplay feedback layer: makes teaching choices, commitment, and progression legible
+   without changing the campaign rules or the app's existing state machine. */
+(function(){
+  "use strict";
+
+  const MECHANIC_LABELS=Object.freeze({
+    1:"Single condition",
+    2:"Either / or",
+    3:"Two valid paths",
+    4:"Threshold",
+    5:"Sequence",
+    6:"Memory",
+    7:"Priority",
+    8:"Context",
+    9:"Matching",
+    10:"Previous case",
+    11:"Threshold + exception",
+    12:"Ordered priorities"
+  });
+
+  const state={
+    levelId:null,
+    lessonCount:-1,
+    rejected:new Set(),
+    pendingRejected:new Set(),
+    reflectionSignature:"",
+    scheduled:false
+  };
+
+  const $=selector=>document.querySelector(selector);
+  const $$=selector=>[...document.querySelectorAll(selector)];
+  const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
+
+  function currentLevel(){
+    const levels=window.RG_LEVELS||[];
+    const title=$("#levelTitle")?.textContent||"";
+    const stage=$("#stageLabel")?.textContent||"";
+    const match=title.match(/^\s*(\d+)\./)||stage.match(/Promise\s+(\d+)/i);
+    return match?levels.find(level=>level.number===Number(match[1]))||null:null;
+  }
+
+  function parseLessonChip(chip,level){
+    const match=(chip.textContent||"").trim().match(/^\d+\.\s*(.*?)\s*→\s*(.+)$/);
+    if(!match)return null;
+    const caseName=match[1].trim();
+    const actionName=match[2].trim();
+    const caseData=(level.teachCases||[]).find(item=>item.name===caseName);
+    const action=(level.actions||[]).find(item=>
+      item.shortLabel===actionName||item.label===actionName||item.id===actionName
+    );
+    return caseData&&action?{caseData,action:action.id}:null;
+  }
+
+  function currentLessons(level){
+    if(!level)return [];
+    return $$("#lessonTrail .lessonChip").map(chip=>parseLessonChip(chip,level)).filter(Boolean);
+  }
+
+  function visibleRules(level,lessons){
+    const authored=new Set((level.rules||[]).map(rule=>rule.id));
+    return window.RuleGardenEngine.consistentRules(level,lessons).filter(rule=>authored.has(rule.id));
+  }
+
+  function analyzeTeachingPath(level,lessons){
+    const E=window.RuleGardenEngine;
+    return lessons.map((lesson,index)=>{
+      const before=lessons.slice(0,index);
+      const after=lessons.slice(0,index+1);
+      const beforeRules=visibleRules(level,before);
+      const afterRules=visibleRules(level,after);
+      const beforeProof=E.proofStatus(level,before);
+      const afterProof=E.proofStatus(level,after);
+      const beforeSatisfied=new Set(beforeProof.items.filter(item=>item.satisfied).map(item=>item.id));
+      const gained=afterProof.items.filter(item=>item.satisfied&&!beforeSatisfied.has(item.id));
+      return {
+        lesson,
+        beforeCount:beforeRules.length,
+        afterCount:afterRules.length,
+        eliminated:Math.max(0,beforeRules.length-afterRules.length),
+        gained,
+        contradiction:afterRules.length===0
+      };
+    });
+  }
+
+  function rejectedRules(level,lessons){
+    const possible=new Set(visibleRules(level,lessons).map(rule=>rule.id));
+    return new Set((level.rules||[]).filter(rule=>!possible.has(rule.id)).map(rule=>rule.id));
+  }
+
+  function updateInferenceState(level,lessons){
+    const rejected=rejectedRules(level,lessons);
+    if(state.levelId!==level.id){
+      state.levelId=level.id;
+      state.lessonCount=lessons.length;
+      state.rejected=rejected;
+      state.pendingRejected.clear();
+      state.reflectionSignature="";
+      return;
+    }
+    if(lessons.length>state.lessonCount){
+      state.pendingRejected=new Set([...rejected].filter(id=>!state.rejected.has(id)));
+    }else if(lessons.length<state.lessonCount){
+      state.pendingRejected.clear();
+    }
+    state.lessonCount=lessons.length;
+    state.rejected=rejected;
+  }
+
+  function updateBeliefLine(level,lessons,path){
+    const copy=$("#beliefCopy");
+    if(!copy)return;
+    const current=visibleRules(level,lessons);
+    let text;
+    if(!lessons.length){
+      text=`Pip is weighing ${level.rules.length} possible Promises. Each example should remove the ones that no longer fit.`;
+    }else if(!current.length){
+      text="These examples conflict. Pip cannot form one Promise until an example is changed or removed.";
+    }else{
+      const latest=path[path.length-1];
+      if(current.length===1){
+        text=latest.eliminated
+          ?`${latest.eliminated} ${latest.eliminated===1?"Promise":"Promises"} crossed out. One clear Promise remains.`
+          :"One clear Promise remains. This example confirmed it without narrowing the field further.";
+      }else if(latest.eliminated){
+        text=`${latest.eliminated} ${latest.eliminated===1?"Promise":"Promises"} crossed out. ${current.length} are still possible.`;
+      }else if(latest.gained.length){
+        text=`This example opened a new part of the Promise. ${current.length} possible Promises still fit.`;
+      }else{
+        text=`This example confirmed Pip's current thinking but eliminated no alternatives. ${current.length} Promises still fit.`;
+      }
+    }
+    if(copy.textContent!==text)copy.textContent=text;
+  }
+
+  function updateNotebookActions(level,lessons){
+    $$("#notebookEvidence .notebookEvidenceRow").forEach((row,index)=>{
+      const lesson=lessons[index];
+      const action=lesson&&(level.actions||[]).find(item=>item.id===lesson.action);
+      const label=action?.shortLabel||action?.label;
+      const verdict=row.querySelector("em");
+      if(verdict&&label&&verdict.textContent!==label){
+        verdict.textContent=label;
+        verdict.title=action.label;
+        verdict.setAttribute("aria-label",`Action: ${action.label}`);
+      }
+    });
+  }
+
+  function soundEnabled(){
+    try{
+      const raw=localStorage.getItem("rule-garden-last-promise-v1");
+      return !raw||JSON.parse(raw)?.settings?.sound!==false;
+    }catch(_error){return true;}
+  }
+
+  function audioContext(){
+    const Context=window.AudioContext||window.webkitAudioContext;
+    if(!Context)return null;
+    window.__ruleGardenFeedbackAudio=window.__ruleGardenFeedbackAudio||new Context();
+    return window.__ruleGardenFeedbackAudio;
+  }
+
+  function playTone(frequency,duration=.08,type="sine",volume=.035,delay=0){
+    if(!soundEnabled())return;
+    const context=audioContext();
+    if(!context)return;
+    const start=context.currentTime+delay;
+    const oscillator=context.createOscillator();
+    const gain=context.createGain();
+    oscillator.type=type;
+    oscillator.frequency.value=frequency;
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(volume,start+.012);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    oscillator.connect(gain);gain.connect(context.destination);
+    oscillator.start(start);oscillator.stop(start+duration+.03);
+  }
+
+  function playCue(type){
+    if(type==="paper"){
+      playTone(260,.055,"triangle",.018);
+      playTone(390,.07,"sine",.014,.035);
+    }else if(type==="seal"){
+      playTone(330,.11,"triangle",.035);
+      playTone(495,.13,"sine",.032,.07);
+      playTone(660,.16,"sine",.025,.14);
+    }else if(type==="scratch"){
+      playTone(190,.045,"sawtooth",.018);
+      playTone(145,.055,"triangle",.014,.045);
+    }
+  }
+
+  function applyRejectedRuleFeedback(level){
+    const byName=new Map((level.rules||[]).map(rule=>[rule.name,rule.id]));
+    let played=false;
+    $$(".rejectedRule").forEach(item=>{
+      const name=item.querySelector("span")?.textContent?.trim();
+      const id=byName.get(name);
+      if(!id)return;
+      const isNew=state.pendingRejected.has(id);
+      if(isNew){
+        item.classList.add("newlyRejected");
+        item.classList.remove("alreadyRejected");
+        setTimeout(()=>{
+          if(!item.isConnected)return;
+          item.classList.remove("newlyRejected");
+          item.classList.add("alreadyRejected");
+        },650);
+        played=true;
+      }else if(!item.classList.contains("newlyRejected")){
+        item.classList.add("alreadyRejected");
+      }
+    });
+    if(played){
+      playCue("scratch");
+      state.pendingRejected.clear();
+    }
+  }
+
+  function progressFor(level){
+    try{
+      const raw=localStorage.getItem("rule-garden-last-promise-v1");
+      const parsed=raw?JSON.parse(raw):{};
+      return Number(parsed?.attempts?.[level.id])||0;
+    }catch(_error){return 0;}
+  }
+
+  function updateCommitmentUI(level){
+    const button=$("#beginChallengeButton");
+    if(!button)return;
+    const phase=document.body.dataset.gamePhase||"teaching";
+    if(phase==="teaching"&&!button.disabled&&button.textContent!=="Seal the Promise"){
+      button.textContent="Seal the Promise";
+      button.setAttribute("aria-label","Seal Pip's learned Promise and begin the solo try");
+    }
+    const prompt=$("#teachingStepPrompt strong");
+    if(prompt&&/Let Pip try/i.test(prompt.textContent))prompt.textContent="Step 4 · Seal the Promise";
+
+    const mount=$("#challengeButtonMount")||button.parentElement;
+    if(!mount)return;
+    let status=$("#soloTryStatus");
+    if(!status){
+      status=document.createElement("span");
+      status.id="soloTryStatus";
+      status.className="soloTryStatus";
+      mount.insertBefore(status,button);
+    }
+    const attempts=progressFor(level);
+    const display=phase==="teaching"?attempts+1:Math.max(1,attempts);
+    const statusText=`Solo try ${display}`;
+    const statusTitle=attempts?`${attempts} solo ${attempts===1?"try":"tries"} recorded for this Promise.`:"No solo tries recorded yet.";
+    if(status.textContent!==statusText)status.textContent=statusText;
+    if(status.title!==statusTitle)status.title=statusTitle;
+  }
+
+  function decorateMap(){
+    $$("#levelMap .levelNode").forEach((node,index)=>{
+      const level=(window.RG_LEVELS||[])[index];
+      if(!level)return;
+      let badge=node.querySelector(".nodeMechanic");
+      if(!badge){
+        badge=document.createElement("span");
+        badge.className="nodeMechanic";
+        const meta=node.querySelector(".nodeMeta");
+        meta?.after(badge);
+      }
+      const label=MECHANIC_LABELS[level.number]||"New rule shape";
+      if(badge.textContent!==label)badge.textContent=label;
+      if(node.dataset.mechanic!==label)node.dataset.mechanic=label;
+    });
+  }
+
+  function teachingPathMarkup(level,lessons,path){
+    const rows=path.map((step,index)=>{
+      const action=(level.actions||[]).find(item=>item.id===step.lesson.action);
+      const explanation=window.RuleGardenEngine.explainEvidence(level,window.RuleGardenEngine.chosenRule(level,lessons),step.lesson);
+      const gain=step.gained[0]?.label||"";
+      let effect;
+      if(step.contradiction)effect="Created a contradiction";
+      else if(step.eliminated)effect=`Crossed out ${step.eliminated} ${step.eliminated===1?"Promise":"Promises"}`;
+      else if(gain)effect=`Opened: ${gain}`;
+      else effect="Confirmed the current possibilities";
+      return `<div class="evidenceRow teachingPathRow">
+        <div class="evidenceIndex">${index+1}</div>
+        <div class="teachingPathBody">
+          <strong>${escapeHtml(step.lesson.caseData.name)} → ${escapeHtml(action?.shortLabel||action?.label||step.lesson.action)}</strong>
+          <div class="pathMetrics"><span>${step.beforeCount} → ${step.afterCount} possible</span><span>${escapeHtml(effect)}</span></div>
+          <small>${escapeHtml(explanation.text)}</small>
+        </div>
+      </div>`;
+    }).join("");
+    return `<div class="teachingPathHeading"><span>YOUR TEACHING PATH</span><strong>How each example changed Pip's thinking</strong></div>${rows}`;
+  }
+
+  function updateReflection(level,lessons,path){
+    const card=$("#reflectionCard");
+    if(!card||card.classList.contains("hidden")||!lessons.length)return;
+    const explanation=$("#evidenceExplanation");
+    const signature=`${level.id}:${lessons.map(item=>`${item.caseData.id}:${item.action}`).join("|")}:${document.body.dataset.gamePhase}`;
+    if(explanation&&state.reflectionSignature!==signature){
+      explanation.innerHTML=teachingPathMarkup(level,lessons,path);
+      state.reflectionSignature=signature;
+    }
+    let badge=$("#firstLightBadge");
+    if(!badge){
+      badge=document.createElement("div");
+      badge.id="firstLightBadge";
+      badge.className="firstLightBadge";
+      $("#reflectionSummary")?.after(badge);
+    }
+    const success=/Promise works/i.test($("#reflectionTitle")?.textContent||"");
+    const attempts=Math.max(1,progressFor(level));
+    badge.classList.toggle("firstLightBadge--earned",success&&attempts===1);
+    badge.classList.toggle("firstLightBadge--retry",!success||attempts>1);
+    const badgeText=success&&attempts===1
+      ?"✦ First Light · understood on the first solo try"
+      :`Solo try ${attempts} · ${success?"Promise restored":"revise and seal again"}`;
+    if(badge.textContent!==badgeText)badge.textContent=badgeText;
+  }
+
+  function refresh(){
+    state.scheduled=false;
+    const level=currentLevel();
+    decorateMap();
+    if(!level)return;
+    const lessons=currentLessons(level);
+    updateInferenceState(level,lessons);
+    const path=analyzeTeachingPath(level,lessons);
+    updateBeliefLine(level,lessons,path);
+    updateNotebookActions(level,lessons);
+    applyRejectedRuleFeedback(level);
+    updateCommitmentUI(level);
+    updateReflection(level,lessons,path);
+  }
+
+  function scheduleRefresh(){
+    if(state.scheduled)return;
+    state.scheduled=true;
+    requestAnimationFrame(refresh);
+  }
+
+  function onClick(event){
+    const button=event.target.closest?.("button");
+    if(!button)return;
+    if(button.id==="openNotebookButton"||button.id==="closeNotebookButton")playCue("paper");
+    if(button.id==="beginChallengeButton"&&!button.disabled){
+      button.classList.add("isSealing");
+      document.body.classList.add("promiseSealing");
+      playCue("seal");
+      setTimeout(()=>{
+        button.classList.remove("isSealing");
+        document.body.classList.remove("promiseSealing");
+      },700);
+    }
+  }
+
+  function init(){
+    document.addEventListener("click",onClick,true);
+    new MutationObserver(scheduleRefresh).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class","disabled","data-game-phase"]});
+    scheduleRefresh();
+  }
+
+  window.RuleGardenFeedback={currentLevel,currentLessons,visibleRules,analyzeTeachingPath,rejectedRules,refresh};
+  if(document.readyState==="loading")window.addEventListener("DOMContentLoaded",init,{once:true});
+  else setTimeout(init,0);
+})();
