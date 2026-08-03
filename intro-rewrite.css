@@ -1,0 +1,205 @@
+/* Verb-first onboarding rewrite. Presentation only; existing controls and handlers are preserved. */
+.welcomeScreen.introRewrite{
+  display:block;
+  max-width:900px;
+  min-height:calc(100vh - 75px);
+  padding-top:26px;
+  color:#fff8e8;
+}
+.introShell{
+  overflow:hidden;
+  border:1px solid rgba(255,232,168,.14);
+  border-radius:34px;
+  background:#050f13;
+  box-shadow:0 40px 90px rgba(0,8,12,.52);
+}
+.introShell .heroGarden{
+  width:100%;
+  height:350px;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background-image:linear-gradient(180deg,rgba(5,15,19,.28) 0%,rgba(5,15,19,.08) 35%,rgba(5,15,19,.98) 100%),url("assets/cinematic/scenes/bridge-of-embers.webp");
+  background-size:cover;
+  background-position:center 42%;
+}
+.introShell .heroGarden::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 78% 15%,rgba(255,226,139,.12),transparent 30%);
+}
+.introShell .heroMoon,
+.introShell .heroHill,
+.introShell .lantern,
+.introShell #heroPip{display:none!important}
+.introHeroCopy{
+  position:absolute;
+  z-index:2;
+  left:clamp(22px,5vw,48px);
+  right:clamp(22px,5vw,48px);
+  bottom:28px;
+  max-width:720px;
+}
+.introHeroCopy .kicker{
+  margin-bottom:10px;
+  color:rgba(255,238,191,.68);
+  font-size:.66rem;
+  letter-spacing:.25em;
+  opacity:1;
+}
+.introHeroCopy h1{
+  margin:0;
+  max-width:720px;
+  color:#fff8e8;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(2.25rem,6vw,4.1rem);
+  font-weight:600;
+  line-height:1.02;
+  letter-spacing:-.035em;
+  text-wrap:balance;
+  text-shadow:0 4px 22px rgba(0,0,0,.42);
+}
+.introShell .welcomeCopy{
+  padding:26px clamp(22px,5vw,48px) 30px;
+}
+.introShell .introLead{
+  max-width:720px;
+  margin:0 0 20px;
+  color:rgba(255,248,232,.82);
+  font-size:1.04rem;
+  line-height:1.65;
+  text-wrap:pretty;
+}
+.introTurn{
+  display:grid;
+  gap:13px;
+  padding:17px 18px;
+  border:1px solid rgba(255,232,168,.14);
+  border-radius:18px;
+  background:rgba(255,255,255,.042);
+}
+.introTurnLabel{
+  color:rgba(255,238,191,.5);
+  font-size:.62rem;
+  font-weight:900;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.introStep{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr);
+  align-items:start;
+  gap:13px;
+}
+.introStepIcon{
+  width:42px;
+  height:42px;
+  overflow:hidden;
+  border:1px solid rgba(255,224,143,.3);
+  border-radius:50%;
+  background:rgba(255,255,255,.05);
+}
+.introStepIcon img{width:100%;height:100%;object-fit:cover}
+.introStepIcon--check{
+  display:grid;
+  place-items:center;
+  background:rgba(79,152,112,.3);
+  border-color:rgba(127,199,155,.45);
+  color:#bfe8cf;
+  font-size:1rem;
+  font-weight:900;
+}
+.introStep strong,.introStep small{display:block}
+.introStep strong{color:#fff8e8;font-size:.96rem}
+.introStep small{margin-top:3px;color:rgba(255,248,232,.58);font-size:.84rem;line-height:1.45}
+.introGoal{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-top:18px;
+  padding:14px 16px;
+  border:1px solid rgba(127,199,155,.22);
+  border-radius:15px;
+  background:rgba(44,91,69,.16);
+  color:rgba(255,242,201,.92);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:.98rem;
+  font-style:italic;
+  line-height:1.45;
+}
+.introGoalPip{
+  width:36px;
+  height:36px;
+  flex:none;
+  overflow:hidden;
+  border-radius:50%;
+}
+.introGoalPip img{width:100%;height:100%;object-fit:cover;transform:scale(1.18)}
+.introActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:20px;
+}
+.introShell .introActions .button{margin:0}
+.introShell #startButton{
+  flex:1 1 260px;
+  min-height:56px;
+  background:#efc66a;
+  color:#24190a;
+  -webkit-text-fill-color:#24190a;
+  font-size:1.02rem;
+}
+.introShell #continueButton,
+.introShell #resumeLessonButton{
+  flex:1 1 220px;
+  min-height:50px;
+  border:1px solid rgba(255,232,168,.18);
+  background:rgba(255,255,255,.055);
+  color:#fff8e8;
+}
+.introMeta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  margin-top:11px;
+  color:rgba(255,248,232,.43);
+  font-size:.76rem;
+}
+.introMeta i{font-style:normal;opacity:.5}
+.introLore{
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.07);
+  color:rgba(255,248,232,.42);
+  font-size:.8rem;
+  line-height:1.55;
+  text-wrap:pretty;
+}
+.introShell button:focus-visible{
+  outline:3px solid rgba(255,211,107,.75);
+  outline-offset:3px;
+}
+
+@media(max-width:700px){
+  .welcomeScreen.introRewrite{padding:18px 12px 60px}
+  .introShell{border-radius:25px}
+  .introShell .heroGarden{height:260px;background-position:center 44%}
+  .introHeroCopy{left:20px;right:20px;bottom:20px}
+  .introHeroCopy h1{font-size:clamp(2rem,10vw,2.75rem);line-height:1.04}
+  .introShell .welcomeCopy{padding:21px 20px 24px}
+  .introShell .introLead{font-size:.97rem;line-height:1.58}
+  .introTurn{padding:15px}
+  .introStep{grid-template-columns:38px minmax(0,1fr);gap:11px}
+  .introStepIcon{width:38px;height:38px}
+  .introStep strong{font-size:.91rem}
+  .introStep small{font-size:.79rem}
+  .introGoal{font-size:.92rem}
+  .introActions{display:grid;grid-template-columns:1fr}
+  .introShell #startButton,.introShell #continueButton,.introShell #resumeLessonButton{width:100%;min-height:54px}
+}
+
+body.reduceMotion .introShell *{scroll-behavior:auto}
