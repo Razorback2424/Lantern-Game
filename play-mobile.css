@@ -117,4 +117,17 @@ body.newPlayShell .travelerRail .travelerNode::after{
     text-align:center;
     line-height:1.2;
   }
+
+  /* Results live after #newPlayShell, so reflection must return to normal page scrolling. */
+  body[data-screen="play"].newPlayShell[data-game-phase="reflection"],
+  body[data-screen="play"].newPlayShell[data-game-phase="committed"]{
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.newPlayShell[data-game-phase="reflection"] .playScreen,
+  body.newPlayShell[data-game-phase="committed"] .playScreen{
+    overflow:visible!important;
+    padding-bottom:80px!important;
+  }
 }
